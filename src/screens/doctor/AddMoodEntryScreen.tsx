@@ -11,7 +11,7 @@ import {
   Surface
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, MoodEntry } from '../../types';
 
