@@ -165,9 +165,9 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        {renderHeader()}
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
         <View style={styles.loadingContainer}>
+          {renderHeader()}
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text variant="bodyLarge" style={styles.loadingText}>Loading patients...</Text>
         </View>
@@ -176,9 +176,7 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
-      
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
       {patients.length === 0 ? (
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons name="account-off" size={64} color={theme.colors.outline} />
@@ -195,6 +193,7 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
           renderItem={renderPatientCard}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContainer}
+          ListHeaderComponent={renderHeader}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -214,6 +213,7 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

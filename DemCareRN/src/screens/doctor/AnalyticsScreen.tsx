@@ -672,10 +672,9 @@ export default function AnalyticsScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
-      
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
       <ScrollView style={styles.scrollView}>
+        {renderHeader()}
         {renderPatientSelector()}
         
         {selectedPatient ? (
@@ -788,7 +787,7 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 20,
     paddingHorizontal: 24,
-    paddingTop: 8,
+    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

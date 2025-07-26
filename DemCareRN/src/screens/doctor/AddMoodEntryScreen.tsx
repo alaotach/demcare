@@ -147,9 +147,9 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
       <ScrollView style={styles.scrollView}>
+        {renderHeader()}
         <View style={styles.content}>
           {/* Mood Selection */}
           <Card style={styles.card}>
@@ -288,10 +288,12 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     elevation: 4,
+    marginTop: -50, // Extend header upward to cover status bar area
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingTop: 74, // Extra top padding to account for extended area (50 + 24)
   },
   headerContent: {
     flexDirection: 'row',

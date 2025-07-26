@@ -184,15 +184,15 @@ export default function GeneralScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
-
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {renderHeader()}
+
         {/* Statistics Overview */}
         <Card style={styles.statsCard}>
           <Card.Content>
@@ -409,6 +409,7 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

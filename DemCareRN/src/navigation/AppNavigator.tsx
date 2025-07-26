@@ -31,7 +31,7 @@ import MedicationManagementScreen from '../screens/MedicationManagementScreen';
 
 // Common Screens
 import SubscriptionScreen from '../screens/SubscriptionScreen';
-import SettingsScreen from '../screens/EnhancedSettingsScreen';
+import SettingsScreen from '../screens/UltraEnhancedSettingsScreen';
 import LiveFeedScreen from '../screens/LiveFeedScreen';
 import CameraFeedScreen from '../screens/CameraFeedScreen';
 

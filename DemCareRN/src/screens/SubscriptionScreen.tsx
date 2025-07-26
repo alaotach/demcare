@@ -91,8 +91,8 @@ export default function SubscriptionScreen({ navigation }: { navigation: any }) 
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
       <ScrollView style={styles.scrollView}>
+        {renderHeader()}
 
         <SegmentedButtons
           value={selectedTier}

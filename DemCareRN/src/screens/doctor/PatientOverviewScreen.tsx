@@ -625,11 +625,12 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {renderHeader()}
 
-      {/* Tab Navigation */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabContainer}>
+        {/* Tab Navigation */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabContainer}>
         {[
           { key: 'overview', label: 'Overview', icon: 'view-dashboard' },
           { key: 'sleep', label: 'Sleep', icon: 'sleep' },
@@ -658,6 +659,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
         {activeTab === 'diet' && renderDietTab()}
         {activeTab === 'activity' && renderActivityTab()}
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -668,10 +670,12 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     elevation: 4,
+    marginTop: -50,
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

@@ -513,9 +513,10 @@ export default function DoctorDashboard({ navigation }: Props) {
 
   if (isLoading && patients.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        {renderHeader()}
-        <View style={styles.loadingContainer}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+        <ScrollView style={styles.scrollView}>
+          {renderHeader()}
+          <View style={styles.loadingContainer}>
           <Surface style={[styles.loadingIconContainer, { backgroundColor: theme.colors.primaryContainer }]} elevation={4}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </Surface>
@@ -526,20 +527,20 @@ export default function DoctorDashboard({ navigation }: Props) {
             Please wait while we fetch the latest data
           </Text>
         </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
-      
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {renderHeader()}
         {renderStats()}
         {renderQuickActions()}
         
@@ -634,10 +635,12 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     borderRadius: 0,
+    marginTop: -50,
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

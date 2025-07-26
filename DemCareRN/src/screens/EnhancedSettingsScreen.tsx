@@ -322,7 +322,7 @@ export default function EnhancedSettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {renderHeader()}
         {renderPreferences()}
@@ -383,10 +383,12 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     borderRadius: 0,
+    marginTop: -50,
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingTop: 74,
   },
   profileSection: {
     flexDirection: 'row',

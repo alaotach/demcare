@@ -9,6 +9,8 @@ import {
   Platform,
   Animated,
   TouchableOpacity,
+  StatusBar,
+  Keyboard,
 } from 'react-native';
 import {
   TextInput,
@@ -42,6 +44,7 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   
   // Animation values
   const logoScale = useState(new Animated.Value(0.8))[0];
@@ -50,6 +53,17 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
   const formOpacity = useState(new Animated.Value(0))[0];
 
   useEffect(() => {
+    // Hide status bar for full screen experience
+    StatusBar.setHidden(true, 'fade');
+    
+    // Keyboard event listeners
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
+    
     // Start animations
     Animated.sequence([
       Animated.parallel([
@@ -78,6 +92,13 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
         }),
       ]),
     ]).start();
+
+    // Cleanup: Show status bar when component unmounts
+    return () => {
+      StatusBar.setHidden(false, 'fade');
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
   }, []);
 
   const validateForm = () => {
@@ -143,7 +164,8 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <StatusBar hidden={true} />
       <LinearGradient
         colors={[
           theme.colors.primary,
@@ -155,283 +177,288 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <KeyboardAvoidingView
-          style={styles.keyboardView}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-        >
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            bounces={false}
+          <KeyboardAvoidingView
+            style={styles.keyboardView}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
           >
-            {/* Header Section */}
-            <Animated.View
-              style={[
-                styles.header,
-                {
-                  opacity: logoOpacity,
-                  transform: [{ scale: logoScale }],
-                },
-              ]}
-            >
-              <Surface style={styles.logoContainer} elevation={5}>
-                <LinearGradient
-                  colors={[theme.colors.primary, theme.colors.primaryContainer]}
-                  style={styles.logoGradient}
-                >
-                  <MaterialCommunityIcons name="medical-bag" size={40} color="white" />
-                </LinearGradient>
-              </Surface>
-              <Text variant="headlineLarge" style={styles.title}>
-                DemCare
-              </Text>
-              <Text variant="titleMedium" style={styles.subtitle}>
-                Patient Monitoring System
-              </Text>
-              <Text variant="bodyMedium" style={styles.description}>
-                Secure access to comprehensive patient care and monitoring tools
-              </Text>
-            </Animated.View>
-
-            {/* Quick Login Demo Buttons */}
-            <Animated.View
-              style={[
-                styles.quickLoginContainer,
-                {
-                  opacity: formOpacity,
-                  transform: [{ translateY: formTranslateY }],
-                },
-              ]}
-            >
-              <Text variant="bodyMedium" style={styles.quickLoginTitle}>
-                Quick Demo Access
-              </Text>
-              <View style={styles.quickLoginButtons}>
-                <Chip
-                  icon="doctor"
-                  mode="outlined"
-                  onPress={() => handleQuickLogin('doctor')}
-                  style={[styles.quickLoginChip, { backgroundColor: 'rgba(255,255,255,0.15)' }]}
-                  textStyle={{ color: 'white', fontWeight: '600' }}
-                >
-                  Doctor Demo
-                </Chip>
-                <Chip
-                  icon="account-heart"
-                  mode="outlined"
-                  onPress={() => handleQuickLogin('caregiver')}
-                  style={[styles.quickLoginChip, { backgroundColor: 'rgba(255,255,255,0.15)' }]}
-                  textStyle={{ color: 'white', fontWeight: '600' }}
-                >
-                  Caregiver Demo
-                </Chip>
-              </View>
-            </Animated.View>
-
-            {/* Login Form */}
-            <Animated.View
-              style={[
-                styles.formContainer,
-                {
-                  opacity: formOpacity,
-                  transform: [{ translateY: formTranslateY }],
-                },
-              ]}
-            >
-              <Card style={styles.loginCard}>
-                <Card.Content style={styles.cardContent}>
-                  <View style={styles.cardHeader}>
-                    <MaterialCommunityIcons
-                      name="shield-account"
-                      size={28}
-                      color={theme.colors.primary}
-                    />
-                    <Text variant="headlineSmall" style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
-                      Secure Login
-                    </Text>
-                  </View>
-
-                  <TextInput
-                    label="Email Address"
-                    value={email}
-                    onChangeText={setEmail}
-                    mode="outlined"
-                    style={styles.input}
-                    outlineStyle={styles.inputOutline}
-                    left={<TextInput.Icon icon="email" />}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    textContentType="emailAddress"
-                    error={!!errors.email}
-                  />
-                  {errors.email && (
-                    <HelperText type="error" style={styles.helperText}>
-                      {errors.email}
-                    </HelperText>
-                  )}
-
-                  <TextInput
-                    label="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    mode="outlined"
-                    style={styles.input}
-                    outlineStyle={styles.inputOutline}
-                    left={<TextInput.Icon icon="lock" />}
-                    right={
-                      <TextInput.Icon
-                        icon={showPassword ? "eye-off" : "eye"}
-                        onPress={() => setShowPassword(!showPassword)}
-                      />
-                    }
-                    secureTextEntry={!showPassword}
-                    autoComplete="password"
-                    textContentType="password"
-                    error={!!errors.password}
-                  />
-                  {errors.password && (
-                    <HelperText type="error" style={styles.helperText}>
-                      {errors.password}
-                    </HelperText>
-                  )}
-
-                  <Button
-                    mode="contained"
-                    onPress={handleLogin}
-                    loading={loading}
-                    disabled={loading}
-                    style={styles.loginButton}
-                    contentStyle={styles.buttonContent}
-                    labelStyle={{ fontSize: 16, fontWeight: '600' }}
+          <View style={styles.contentContainer}>
+            {/* Top Section - Header */}
+            <View style={styles.topSection}>
+              <Animated.View
+                style={[
+                  styles.header,
+                  {
+                    opacity: logoOpacity,
+                    transform: [{ scale: logoScale }],
+                  },
+                ]}
+              >
+                <Surface style={styles.logoContainer} elevation={5}>
+                  <LinearGradient
+                    colors={[theme.colors.primary, theme.colors.primaryContainer]}
+                    style={styles.logoGradient}
                   >
-                    {loading ? 'Signing In...' : 'Sign In'}
-                  </Button>
+                    <MaterialCommunityIcons name="medical-bag" size={24} color="white" />
+                  </LinearGradient>
+                </Surface>
+                <Text variant="headlineLarge" style={styles.title}>
+                  DemCare
+                </Text>
+                <Text variant="titleMedium" style={styles.subtitle}>
+                  Patient Monitoring System
+                </Text>
+                <Text variant="bodyMedium" style={styles.description}>
+                  Secure access to comprehensive patient care and monitoring tools
+                </Text>
+              </Animated.View>
+            </View>
 
-                  <Button
-                    mode="text"
-                    onPress={handleForgotPassword}
-                    style={styles.forgotButton}
-                    labelStyle={{ color: theme.colors.primary, fontWeight: '600' }}
+            {/* Middle Section - Quick Login + Form */}
+            <View style={styles.middleSection}>
+              {/* Quick Login Demo Buttons */}
+              <Animated.View
+                style={[
+                  styles.quickLoginContainer,
+                  {
+                    opacity: formOpacity,
+                    transform: [{ translateY: formTranslateY }],
+                  },
+                ]}
+              >
+                <Text variant="bodyMedium" style={styles.quickLoginTitle}>
+                  Quick Demo Access
+                </Text>
+                <View style={styles.quickLoginButtons}>
+                  <Chip
+                    icon="doctor"
+                    mode="outlined"
+                    onPress={() => handleQuickLogin('doctor')}
+                    style={[styles.quickLoginChip, { backgroundColor: 'rgba(255,255,255,0.25)' }]}
+                    textStyle={{ color: 'white', fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}
                   >
-                    Forgot Password?
-                  </Button>
-                </Card.Content>
-              </Card>
-            </Animated.View>
+                    Doctor Demo
+                  </Chip>
+                  <Chip
+                    icon="account-heart"
+                    mode="outlined"
+                    onPress={() => handleQuickLogin('caregiver')}
+                    style={[styles.quickLoginChip, { backgroundColor: 'rgba(255,255,255,0.25)' }]}
+                    textStyle={{ color: 'white', fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}
+                  >
+                    Caregiver Demo
+                  </Chip>
+                </View>
+              </Animated.View>
 
-            {/* Sign Up Section */}
-            <Animated.View
-              style={[
-                styles.signupContainer,
-                {
-                  opacity: formOpacity,
-                  transform: [{ translateY: formTranslateY }],
-                },
-              ]}
-            >
-              <Card style={styles.signupCard}>
-                <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.1)']}
-                  style={styles.signupGradient}
-                >
-                  <Card.Content style={styles.signupCardContent}>
-                    <View style={styles.signupHeader}>
-                      <MaterialCommunityIcons 
-                        name="account-plus-outline" 
-                        size={20} 
-                        color="white" 
+              {/* Login Form */}
+              <Animated.View
+                style={[
+                  styles.formContainer,
+                  {
+                    opacity: formOpacity,
+                    transform: [{ translateY: formTranslateY }],
+                  },
+                ]}
+              >
+                <Card style={styles.loginCard}>
+                  <Card.Content style={styles.cardContent}>
+                    <View style={styles.cardHeader}>
+                      <MaterialCommunityIcons
+                        name="shield-account"
+                        size={28}
+                        color={theme.colors.primary}
                       />
-                      <Text variant="titleMedium" style={styles.signupText}>
-                        New to DemCare?
+                      <Text variant="headlineSmall" style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+                        Secure Login
                       </Text>
                     </View>
-                    <Text variant="bodySmall" style={styles.signupDescription}>
-                      Join healthcare professionals worldwide
-                    </Text>
-                    <Button
-                      mode="outlined"
-                      onPress={() => navigation.navigate('SignUp')}
-                      style={styles.signupButton}
-                      contentStyle={styles.signupButtonContent}
-                      labelStyle={styles.signupButtonLabel}
-                    >
-                      Create Free Account
-                    </Button>
-                    
-                    <View style={styles.benefitsContainer}>
-                      <View style={styles.benefitRow}>
-                        <View style={styles.benefitItem}>
-                          <MaterialCommunityIcons name="check" size={14} color="#4CAF50" />
-                          <Text style={styles.benefitText}>Free</Text>
-                        </View>
-                        <View style={styles.benefitItem}>
-                          <MaterialCommunityIcons name="check" size={14} color="#4CAF50" />
-                          <Text style={styles.benefitText}>No Card</Text>
-                        </View>
-                        <View style={styles.benefitItem}>
-                          <MaterialCommunityIcons name="check" size={14} color="#4CAF50" />
-                          <Text style={styles.benefitText}>2 Min Setup</Text>
-                        </View>
-                      </View>
-                    </View>
-                  </Card.Content>
-                </LinearGradient>
-              </Card>
-            </Animated.View>
 
-            {/* Footer */}
-            <View style={styles.footer}>
-              <Text variant="bodySmall" style={styles.footerText}>
-                Powered by Advanced Healthcare Technology
-              </Text>
-              <View style={styles.securityIndicators}>
-                <MaterialCommunityIcons name="shield-check" size={16} color="rgba(255,255,255,0.7)" />
-                <MaterialCommunityIcons name="lock" size={16} color="rgba(255,255,255,0.7)" />
-                <MaterialCommunityIcons name="certificate" size={16} color="rgba(255,255,255,0.7)" />
-              </View>
+                    <TextInput
+                      label="Email Address"
+                      value={email}
+                      onChangeText={setEmail}
+                      mode="outlined"
+                      style={styles.input}
+                      outlineStyle={styles.inputOutline}
+                      left={<TextInput.Icon icon="email" />}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      textContentType="emailAddress"
+                      error={!!errors.email}
+                    />
+                    {errors.email && (
+                      <HelperText type="error" style={styles.helperText}>
+                        {errors.email}
+                      </HelperText>
+                    )}
+
+                    <TextInput
+                      label="Password"
+                      value={password}
+                      onChangeText={setPassword}
+                      mode="outlined"
+                      style={styles.input}
+                      outlineStyle={styles.inputOutline}
+                      left={<TextInput.Icon icon="lock" />}
+                      right={
+                        <TextInput.Icon
+                          icon={showPassword ? "eye-off" : "eye"}
+                          onPress={() => setShowPassword(!showPassword)}
+                        />
+                      }
+                      secureTextEntry={!showPassword}
+                      autoComplete="password"
+                      textContentType="password"
+                      error={!!errors.password}
+                    />
+                    {errors.password && (
+                      <HelperText type="error" style={styles.helperText}>
+                        {errors.password}
+                      </HelperText>
+                    )}
+
+                    <Button
+                      mode="contained"
+                      onPress={handleLogin}
+                      loading={loading}
+                      disabled={loading}
+                      style={styles.loginButton}
+                      contentStyle={styles.buttonContent}
+                      labelStyle={{ fontSize: 16, fontWeight: '600' }}
+                    >
+                      {loading ? 'Signing In...' : 'Sign In'}
+                    </Button>
+
+                    <Button
+                      mode="text"
+                      onPress={handleForgotPassword}
+                      style={styles.forgotButton}
+                      labelStyle={{ color: theme.colors.primary, fontWeight: '600' }}
+                    >
+                      Forgot Password?
+                    </Button>
+                  </Card.Content>
+                </Card>
+              </Animated.View>
+
+              {/* Sign Up Link - Below login card */}
+              <Animated.View
+                style={[
+                  styles.signupContainer,
+                  {
+                    opacity: formOpacity,
+                    transform: [{ translateY: formTranslateY }],
+                  },
+                ]}
+              >
+                <View style={styles.signupLinkContainer}>
+                  <Text variant="bodyMedium" style={styles.signupPromptText}>
+                    Don't have an account?{' '}
+                  </Text>
+                  <TouchableOpacity 
+                    onPress={() => navigation.navigate('SignUp')}
+                    style={styles.signupLinkButton}
+                  >
+                    <Text variant="bodyMedium" style={styles.signupLinkText}>
+                      Create Account
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </Animated.View>
             </View>
-          </ScrollView>
+
+            {/* Bottom Section - Simple Footer */}
+            {!keyboardVisible && (
+              <View style={styles.bottomSection}>
+                {/* Footer - Compact */}
+                <View style={styles.footer}>
+                  <View style={styles.securityIndicators}>
+                    <MaterialCommunityIcons name="shield-check" size={12} color="rgba(255,255,255,0.95)" />
+                    <Text variant="bodySmall" style={styles.securityText}>
+                      Enterprise Security
+                    </Text>
+                    <MaterialCommunityIcons name="certificate" size={12} color="rgba(255,255,255,0.95)" />
+                    <Text variant="bodySmall" style={styles.securityText}>
+                      HIPAA Compliant
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </View>
         </KeyboardAvoidingView>
-      </LinearGradient>
-    </SafeAreaView>
+    </LinearGradient>
+  </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
   },
   gradientBackground: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: height * 1.2, // Fixed height to prevent gradient shifting
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  safeArea: {
+    flex: 1,
   },
   keyboardView: {
     flex: 1,
   },
-  scrollContainer: {
-    flexGrow: 1,
-    padding: 20,
-    paddingTop: 40,
-    justifyContent: 'center',
-    minHeight: height - 100, // Ensure minimum height
+  contentContainer: {
+    flex: 1,
+    padding: Math.min(width * 0.04, 18),
+    paddingTop: height * 0.005,
+    paddingBottom: height * 0.01,
+    justifyContent: 'space-between',
   },
+  // Responsive Section Heights
+  topSection: {
+    flex: 0.18,
+    justifyContent: 'center',
+    minHeight: height * 0.15,
+    maxHeight: height * 0.2,
+    marginBottom: height * 0.01,
+  },
+  middleSection: {
+    flex: 0.82,
+    justifyContent: 'flex-start',
+    paddingVertical: height * 0.005,
+    paddingBottom: height * 0.08,
+  },
+  bottomSection: {
+    flex: 0.07,
+    justifyContent: 'flex-end',
+    minHeight: height * 0.04,
+    maxHeight: height * 0.06,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: height * 0.005,
+  },
+  // Enhanced Header with Responsive Design
   header: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: height * 0.005,
+    paddingHorizontal: width * 0.02,
   },
   logoContainer: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: Math.min(width * 0.12, 55),
+    height: Math.min(width * 0.12, 55),
+    borderRadius: Math.min(width * 0.06, 27.5),
     overflow: 'hidden',
-    marginBottom: 16,
+    marginBottom: height * 0.008,
     elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   logoGradient: {
     flex: 1,
@@ -439,188 +466,200 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontWeight: 'bold',
-    marginBottom: 6,
+    fontWeight: '800',
+    marginBottom: height * 0.002,
     color: 'white',
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
+    fontSize: Math.min(width * 0.055, 24),
+    letterSpacing: 0.8,
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.9)',
-    marginBottom: 6,
+    color: 'white',
+    marginBottom: height * 0.002,
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
+    textShadowRadius: 4,
+    fontSize: Math.min(width * 0.032, 13),
+    fontWeight: '600',
   },
   description: {
-    color: 'rgba(255,255,255,0.8)',
+    color: 'white',
     textAlign: 'center',
-    paddingHorizontal: 16,
-    lineHeight: 18,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    paddingHorizontal: width * 0.03,
+    lineHeight: height * 0.018,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
+    textShadowRadius: 4,
+    fontSize: Math.min(width * 0.028, 11),
+    fontWeight: '500',
   },
+  // Enhanced Quick Login Section
   quickLoginContainer: {
-    marginBottom: 20,
+    marginBottom: height * 0.01,
     alignItems: 'center',
   },
   quickLoginTitle: {
-    color: 'rgba(255,255,255,0.8)',
-    marginBottom: 12,
+    color: 'white',
+    marginBottom: height * 0.006,
     textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: Math.min(width * 0.028, 11),
+    fontWeight: '700',
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+    letterSpacing: 0.3,
   },
   quickLoginButtons: {
     flexDirection: 'row',
-    gap: 12,
+    gap: width * 0.03,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   quickLoginChip: {
-    elevation: 3,
-    borderColor: 'rgba(255,255,255,0.3)',
+    elevation: 4,
+    borderColor: 'rgba(255,255,255,0.9)',
+    borderWidth: 1.5,
+    minHeight: height * 0.04,
+    paddingHorizontal: width * 0.03,
   },
+  // Enhanced Form Container
   formContainer: {
-    marginBottom: 16,
+    marginBottom: height * 0.008,
   },
   loginCard: {
-    borderRadius: 20,
-    marginBottom: 16,
+    borderRadius: 24,
+    marginBottom: height * 0.01,
     overflow: 'hidden',
-    elevation: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    elevation: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.9)',
   },
   cardContent: {
-    padding: 24,
+    padding: Math.min(width * 0.05, 22),
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: height * 0.02,
+    paddingBottom: height * 0.01,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   cardTitle: {
-    marginLeft: 12,
-    fontWeight: 'bold',
+    marginLeft: width * 0.03,
+    fontWeight: '800',
+    fontSize: Math.min(width * 0.05, 20),
+    letterSpacing: 0.5,
   },
   input: {
-    marginBottom: 4,
-    backgroundColor: 'transparent',
+    marginBottom: height * 0.008,
+    backgroundColor: '#FAFBFC',
+    fontSize: Math.min(width * 0.04, 16),
   },
   inputOutline: {
-    borderRadius: 12,
-    borderWidth: 1.5,
+    borderRadius: 16,
+    borderWidth: 2,
   },
   helperText: {
-    marginBottom: 12,
-    fontSize: 12,
+    marginBottom: height * 0.012,
+    fontSize: Math.min(width * 0.032, 13),
+    marginLeft: width * 0.01,
   },
   buttonContent: {
-    paddingVertical: 12,
+    paddingVertical: height * 0.015,
+    minHeight: height * 0.055,
   },
   loginButton: {
-    marginTop: 16,
-    marginBottom: 12,
-    borderRadius: 12,
-    elevation: 4,
+    marginTop: height * 0.02,
+    marginBottom: height * 0.012,
+    borderRadius: 16,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    minHeight: height * 0.06,
   },
   forgotButton: {
     alignSelf: 'center',
-    marginTop: 4,
+    marginTop: height * 0.005,
+    paddingVertical: height * 0.008,
   },
+  // Enhanced Signup Section
   signupContainer: {
-    marginBottom: 16,
+    alignItems: 'center',
+    marginTop: height * 0.015,
+    marginBottom: height * 0.01,
   },
-  signupCard: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    elevation: 4,
+  signupLinkContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: height * 0.012,
+    paddingHorizontal: width * 0.04,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'transparent',
+    flexWrap: 'wrap',
   },
-  signupGradient: {
-    borderRadius: 16,
-  },
-  signupCardContent: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  signupHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  signupText: {
-    marginLeft: 6,
-    fontWeight: '600',
+  signupPromptText: {
     color: 'white',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  signupDescription: {
-    color: 'rgba(255,255,255,0.85)',
-    textAlign: 'center',
-    marginBottom: 12,
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  signupButton: {
-    borderRadius: 10,
-    marginBottom: 12,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.6)',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  signupButtonContent: {
-    paddingVertical: 8,
-  },
-  signupButtonLabel: {
-    color: 'white',
+    fontSize: Math.min(width * 0.038, 15),
     fontWeight: '600',
-    fontSize: 14,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
-  benefitsContainer: {
-    width: '100%',
+  signupLinkButton: {
+    paddingVertical: height * 0.005,
+    paddingHorizontal: width * 0.02,
+    marginLeft: width * 0.01,
   },
-  benefitRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+  signupLinkText: {
+    color: 'white',
+    fontSize: Math.min(width * 0.04, 16),
+    fontWeight: '800',
+    textDecorationLine: 'underline',
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
+    letterSpacing: 0.5,
   },
-  benefitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  benefitText: {
-    marginLeft: 4,
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.9)',
-    fontWeight: '500',
-  },
+  // Enhanced Footer
   footer: {
     alignItems: 'center',
-    paddingVertical: 16,
-    marginTop: 8,
-  },
-  footerText: {
-    opacity: 0.7,
-    color: 'white',
-    marginBottom: 8,
-    fontSize: 12,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
+    paddingVertical: height * 0.005,
   },
   securityIndicators: {
     flexDirection: 'row',
-    gap: 12,
+    gap: width * 0.012,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 15,
+    paddingVertical: height * 0.005,
+    paddingHorizontal: width * 0.04,
+  },
+  securityText: {
+    color: 'rgba(255,255,255,0.95)',
+    fontSize: Math.min(width * 0.025, 10),
+    fontWeight: '700',
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+    marginLeft: width * 0.003,
+    marginRight: width * 0.008,
   },
 });

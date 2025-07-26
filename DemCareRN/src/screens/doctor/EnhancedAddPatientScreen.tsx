@@ -520,9 +520,8 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {renderHeader()}
-        
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {renderHeader()}
           {renderCurrentStep()}
           <View style={styles.bottomPadding} />
         </ScrollView>

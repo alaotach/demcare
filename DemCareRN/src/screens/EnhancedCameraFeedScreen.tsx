@@ -375,7 +375,7 @@ export default function EnhancedCameraFeedScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
       {renderHeader()}
       {renderCameraGrid()}
 

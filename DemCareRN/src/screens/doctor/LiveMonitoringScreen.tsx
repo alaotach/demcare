@@ -367,14 +367,13 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {renderHeader()}
-      
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
         }
       >
+        {renderHeader()}
         {renderOverviewStats()}
         {renderFilters()}
         
@@ -418,7 +417,7 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 20,
     paddingHorizontal: 20,
-    paddingTop: 8,
+    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',
