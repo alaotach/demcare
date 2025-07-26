@@ -209,48 +209,46 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
   const renderPatientHeader = () => (
     <Surface style={styles.headerSurface} elevation={4}>
       <LinearGradient
-        colors={[getStatusColor(patient.status), getStatusColor(patient.status) + '80']}
+        colors={[theme.colors.primary, theme.colors.primaryContainer]}
         style={styles.headerGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
       >
-        <View style={styles.headerContent}>
-          <Avatar.Image
-            size={80}
-            source={{ uri: `https://ui-avatars.com/api/?name=${patient.fullName}&background=random` }}
-            style={styles.avatar}
-          />
-          <View style={styles.patientInfoHeader}>
-            <Text variant="headlineSmall" style={styles.patientNameHeader}>
-              {patient.fullName}
-            </Text>
-            <View style={styles.statusRow}>
-              <Chip
-                style={[styles.statusChipHeader, { backgroundColor: getStatusColor(patient.status) }]}
-                textStyle={{ color: '#FFFFFF', fontWeight: 'bold' }}
-              >
-                {getStatusText(patient.status)}
-              </Chip>
-              <Badge
-                style={[styles.statusBadge, { backgroundColor: getStatusColor(patient.status) }]}
-                size={12}
-              />
+        <SafeAreaView>
+          <View style={styles.headerContent}>
+            <IconButton
+              icon="arrow-left"
+              iconColor="#FFFFFF"
+              size={20}
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            />
+            <Avatar.Image
+              size={50}
+              source={{ uri: `https://ui-avatars.com/api/?name=${patient.fullName}&background=random` }}
+              style={styles.avatar}
+            />
+            <View style={styles.patientInfoHeader}>
+              <Text variant="titleLarge" style={styles.patientNameHeader}>
+                {patient.fullName}
+              </Text>
+              <View style={styles.statusRow}>
+                <Chip
+                  style={[styles.statusChipHeader, { backgroundColor: getStatusColor(patient.status) }]}
+                  textStyle={{ color: '#FFFFFF', fontWeight: 'bold' }}
+                  compact
+                >
+                  {getStatusText(patient.status)}
+                </Chip>
+              </View>
+            </View>
+            <View style={styles.quickStatsCompact}>
+              <Text variant="bodySmall" style={styles.quickStatCompact}>{patient.age}y</Text>
+              <Text variant="bodySmall" style={styles.quickStatCompact}>{patient.weight}kg</Text>
+              <Text variant="bodySmall" style={styles.quickStatCompact}>{patient.height}cm</Text>
             </View>
           </View>
-        </View>
-        
-        <View style={styles.quickStats}>
-          <View style={styles.quickStatItem}>
-            <Text variant="bodySmall" style={styles.quickStatLabel}>Age</Text>
-            <Text variant="titleMedium" style={styles.quickStatValue}>{patient.age}</Text>
-          </View>
-          <View style={styles.quickStatItem}>
-            <Text variant="bodySmall" style={styles.quickStatLabel}>Weight</Text>
-            <Text variant="titleMedium" style={styles.quickStatValue}>{patient.weight}kg</Text>
-          </View>
-          <View style={styles.quickStatItem}>
-            <Text variant="bodySmall" style={styles.quickStatLabel}>Height</Text>
-            <Text variant="titleMedium" style={styles.quickStatValue}>{patient.height}cm</Text>
-          </View>
-        </View>
+        </SafeAreaView>
       </LinearGradient>
     </Surface>
   );
@@ -390,26 +388,20 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
   };
 
   const renderActionButtons = () => (
-    <View style={styles.actionButtonsContainer}>
-      <Button
-        mode="contained"
-        icon="plus"
-        onPress={() => navigation.navigate('AddSleepData', { patient })}
-        style={[styles.actionButton, { backgroundColor: '#2196F3' }]}
-        contentStyle={styles.actionButtonContent}
-      >
-        Add Sleep Data
-      </Button>
-      <Button
-        mode="contained"
-        icon="emoticon-happy"
-        onPress={() => navigation.navigate('AddMoodEntry', { patient })}
-        style={[styles.actionButton, { backgroundColor: '#4CAF50' }]}
-        contentStyle={styles.actionButtonContent}
-      >
-        Mood Check-in
-      </Button>
-    </View>
+    <Card style={styles.infoCard}>
+      <Card.Content>
+        <View style={styles.contactHeader}>
+          <MaterialCommunityIcons name="information" size={24} color={theme.colors.primary} />
+          <Text variant="titleMedium" style={styles.contactTitle}>
+            Doctor View - Read Only
+          </Text>
+        </View>
+        <Divider style={styles.contactDivider} />
+        <Text variant="bodyMedium" style={styles.infoText}>
+          Patient data management is handled by caretakers. You can monitor vital signs, view trends, and access patient overview for medical assessment.
+        </Text>
+      </Card.Content>
+    </Card>
   );
 
   const renderContactInfo = () => (
@@ -451,7 +443,7 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
@@ -462,7 +454,6 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
         {renderVitalsGrid()}
         {renderTimeRangeSelector()}
         {renderVitalsChart()}
-        {renderActionButtons()}
         {renderContactInfo()}
         
         <View style={styles.bottomPadding} />
@@ -474,7 +465,7 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
         onPress={() => navigation.navigate('PatientOverview', { patient })}
         label="Overview"
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -489,18 +480,21 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   headerGradient: {
-    paddingVertical: 24,
+    paddingVertical: 16,
     paddingHorizontal: 20,
+    paddingTop: 8,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+  },
+  backButton: {
+    marginRight: 8,
   },
   avatar: {
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.3)',
-    marginRight: 16,
+    marginRight: 12,
   },
   patientInfoHeader: {
     flex: 1,
@@ -508,7 +502,7 @@ const styles = StyleSheet.create({
   patientNameHeader: {
     color: 'white',
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   statusRow: {
     flexDirection: 'row',
@@ -520,23 +514,13 @@ const styles = StyleSheet.create({
   statusBadge: {
     marginLeft: 4,
   },
-  quickStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    paddingVertical: 16,
+  quickStatsCompact: {
+    alignItems: 'flex-end',
   },
-  quickStatItem: {
-    alignItems: 'center',
-  },
-  quickStatLabel: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: 4,
-  },
-  quickStatValue: {
-    color: 'white',
-    fontWeight: 'bold',
+  quickStatCompact: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 12,
+    lineHeight: 16,
   },
   vitalsSection: {
     padding: 20,
@@ -684,5 +668,14 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+  },
+  infoCard: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+    elevation: 2,
+  },
+  infoText: {
+    opacity: 0.8,
+    lineHeight: 20,
   },
 });

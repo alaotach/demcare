@@ -13,16 +13,27 @@ import SignUpScreen from '../screens/auth/SignUpScreen';
 
 // Doctor Screens
 import DoctorDashboard from '../screens/doctor/EnhancedDoctorDashboard';
+import CaretakerDashboard from '../screens/doctor/CaretakerDashboard';
 import AddPatientScreen from '../screens/doctor/EnhancedAddPatientScreen';
+import QuickAddPatientScreen from '../screens/doctor/QuickAddPatientScreen';
 import PatientProfileScreen from '../screens/doctor/EnhancedPatientProfileScreen';
 import PatientOverviewScreen from '../screens/doctor/PatientOverviewScreen';
 import AddSleepDataScreen from '../screens/doctor/AddSleepDataScreen';
 import AddMoodEntryScreen from '../screens/doctor/AddMoodEntryScreen';
+import PatientLocationScreen from '../screens/doctor/PatientLocationScreen';
+import ReportsScreen from '../screens/doctor/ReportsScreen';
+import LiveMonitoringScreen from '../screens/doctor/LiveMonitoringScreen';
+import AnalyticsScreen from '../screens/doctor/AnalyticsScreen';
+
+import PatientSelectorScreen from '../screens/doctor/PatientSelectorScreen';
+import MemoryTestScreen from '../screens/MemoryTestScreen';
+import MedicationManagementScreen from '../screens/MedicationManagementScreen';
 
 // Common Screens
-import CameraFeedScreen from '../screens/EnhancedCameraFeedScreen';
 import SubscriptionScreen from '../screens/SubscriptionScreen';
 import SettingsScreen from '../screens/EnhancedSettingsScreen';
+import LiveFeedScreen from '../screens/LiveFeedScreen';
+import CameraFeedScreen from '../screens/CameraFeedScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const AuthStack = createStackNavigator<AuthStackParamList>();
@@ -33,22 +44,62 @@ function AuthStackScreen() {
   return (
     <AuthStack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#6200ee' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' }
+        headerShown: false
       }}
     >
       <AuthStack.Screen 
         name="Login" 
         component={LoginScreen}
-        options={{ title: 'DemCare Login' }}
+        options={{ headerShown: false }}
       />
       <AuthStack.Screen 
         name="SignUp" 
         component={SignUpScreen}
-        options={{ title: 'Create Account' }}
+        options={{ headerShown: false }}
       />
     </AuthStack.Navigator>
+  );
+}
+
+// Caretaker Tab Navigator
+function CaretakerTabs() {
+  const theme = useTheme();
+  
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName: string;
+
+          switch (route.name) {
+            case 'Dashboard':
+              iconName = focused ? 'account-heart' : 'account-heart-outline';
+              break;
+            case 'Camera':
+              iconName = focused ? 'camera' : 'camera-outline';
+              break;
+            case 'Settings':
+              iconName = focused ? 'cog' : 'cog-outline';
+              break;
+            default:
+              iconName = 'circle';
+          }
+
+          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: 'gray',
+        headerShown: false
+      })}
+    >
+      <Tab.Screen name="Dashboard" component={CaretakerDashboard} />
+      <Tab.Screen 
+        name="Camera" 
+        component={LiveFeedScreen}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
   );
 }
 
@@ -83,53 +134,18 @@ function DoctorTabs() {
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',
-        headerStyle: { backgroundColor: theme.colors.surface },
-        headerTintColor: theme.colors.onSurface
+        // Remove all headers from tab screens
+        headerShown: false
       })}
     >
       <Tab.Screen name="Dashboard" component={DoctorDashboard} />
-      <Tab.Screen name="Camera" component={CameraFeedScreen} />
-      <Tab.Screen name="Subscription" component={SubscriptionScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-    </Tab.Navigator>
-  );
-}
-
-// Main App Stack
-function AppStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen 
-        name="DoctorTabs" 
-        component={DoctorTabs}
+      <Tab.Screen 
+        name="Camera" 
+        component={LiveFeedScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen 
-        name="AddPatient" 
-        component={AddPatientScreen}
-        options={{ title: 'Add New Patient' }}
-      />
-      <Stack.Screen 
-        name="PatientProfile" 
-        component={PatientProfileScreen}
-        options={{ title: 'Patient Profile' }}
-      />
-      <Stack.Screen 
-        name="PatientOverview" 
-        component={PatientOverviewScreen}
-        options={{ title: 'Patient Overview' }}
-      />
-      <Stack.Screen 
-        name="AddSleepData" 
-        component={AddSleepDataScreen}
-        options={{ title: 'Add Sleep Data' }}
-      />
-      <Stack.Screen 
-        name="AddMoodEntry" 
-        component={AddMoodEntryScreen}
-        options={{ title: 'Mood Check-in' }}
-      />
-    </Stack.Navigator>
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
   );
 }
 
@@ -141,12 +157,142 @@ export default function AppNavigator() {
     return <AuthStackScreen />;
   }
 
-  // For now, only implementing Doctor role
-  // You can extend this for other roles
+  // Role-based navigation
   if (user?.role === UserRole.DOCTOR) {
-    return <AppStack />;
+    return <DoctorAppStack />;
+  } else if (user?.role === UserRole.CAREGIVER) {
+    return <CaretakerAppStack />;
   }
 
-  // Default to doctor dashboard for other roles (can be customized)
-  return <AppStack />;
+  // Default to doctor dashboard for other roles
+  return <DoctorAppStack />;
+}
+
+// Doctor App Stack
+function DoctorAppStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      <Stack.Screen 
+        name="DoctorTabs" 
+        component={DoctorTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="AddPatient" 
+        component={AddPatientScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="PatientProfile" 
+        component={PatientProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="PatientOverview" 
+        component={PatientOverviewScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Subscription" 
+        component={SubscriptionScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Locations" 
+        component={PatientLocationScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Reports" 
+        component={ReportsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="LiveMonitoring" 
+        component={LiveMonitoringScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Analytics" 
+        component={AnalyticsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="CameraFeed" 
+        component={CameraFeedScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+// Caretaker App Stack
+function CaretakerAppStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      <Stack.Screen 
+        name="CaretakerTabs" 
+        component={CaretakerTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="QuickAddPatient" 
+        component={QuickAddPatientScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="PatientSelector" 
+        component={PatientSelectorScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="PatientProfile" 
+        component={PatientProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="PatientOverview" 
+        component={PatientOverviewScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="AddSleepData" 
+        component={AddSleepDataScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="AddMoodEntry" 
+        component={AddMoodEntryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="MemoryTest" 
+        component={MemoryTestScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="MedicationManagement" 
+        component={MedicationManagementScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Subscription" 
+        component={SubscriptionScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Locations" 
+        component={PatientLocationScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
 }

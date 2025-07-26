@@ -60,6 +60,7 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
     city: '',
     state: '',
     zipCode: '',
+    rfidMacAddress: '', // Add RFID MAC address field
   });
 
   // UI State
@@ -113,8 +114,9 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
         height: parseFloat(formData.height),
         weight: parseFloat(formData.weight),
         caregiverContactNumber: formData.emergencyContactPhone,
-        rfidMacAddress: '',
+        rfidMacAddress: formData.rfidMacAddress || '', // Include RFID MAC address
         doctorId: user?.id || '',
+        medicalRecordNumber: `MRN-${Date.now()}`, // Generate unique medical record number
         emergencyContact: {
           name: formData.emergencyContactName,
           phone: formData.emergencyContactPhone,
@@ -359,6 +361,19 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
           numberOfLines={2}
           placeholder="Separate multiple allergies with commas"
         />
+        
+        <TextInput
+          label="RFID MAC Address (Optional)"
+          value={formData.rfidMacAddress}
+          onChangeText={(text) => setFormData({ ...formData, rfidMacAddress: text })}
+          style={styles.input}
+          mode="outlined"
+          placeholder="e.g., AA:BB:CC:DD:EE:FF"
+          left={<TextInput.Icon icon="bluetooth" />}
+        />
+        <HelperText type="info">
+          Used for location tracking via RFID beacons
+        </HelperText>
       </Card.Content>
     </Card>
   );

@@ -27,6 +27,9 @@ export interface Patient {
   caregiverContactNumber: string;
   rfidMacAddress: string;
   doctorId: string;
+  roomNumber?: string; // Optional room number
+  bedNumber?: string; // Optional bed number
+  medicalRecordNumber: string; // Medical record identifier
   createdAt: Date;
   updatedAt: Date;
   vitals?: VitalSigns;
@@ -201,7 +204,9 @@ export type AuthStackParamList = {
 
 export type RootStackParamList = {
   DoctorTabs: undefined;
+  CaretakerTabs: undefined;
   AddPatient: undefined;
+  QuickAddPatient: undefined;
   PatientProfile: { patient: Patient };
   PatientOverview: { patient: Patient };
   AddSleepData: { patient: Patient };
@@ -210,4 +215,25 @@ export type RootStackParamList = {
   AddPhysicalActivity: { patient: Patient };
   AddBathroomLog: { patient: Patient };
   AddMedicationLog: { patient: Patient };
+  MemoryTest: { 
+    patientId: string; 
+    patientName: string; 
+    onTestComplete?: (score: string) => void; 
+  };
+  MedicationManagement: {
+    patientId: string;
+    patientName: string;
+  };
+  PatientSelector: {
+    title: string;
+    nextScreen: string;
+  };
+  Logs: undefined;
+  General: undefined;
+  Subscription: undefined;
+  Locations: undefined;
+  Reports: undefined;
+  LiveMonitoring: undefined;
+  Analytics: undefined;
+  CameraFeed: undefined;
 };

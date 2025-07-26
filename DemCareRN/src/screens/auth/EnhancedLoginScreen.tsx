@@ -158,11 +158,13 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
         <KeyboardAvoidingView
           style={styles.keyboardView}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
           <ScrollView
             contentContainerStyle={styles.scrollContainer}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            bounces={false}
           >
             {/* Header Section */}
             <Animated.View
@@ -176,7 +178,7 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
             >
               <Surface style={styles.logoContainer} elevation={5}>
                 <LinearGradient
-                  colors={[theme.colors.primary, theme.colors.secondary || theme.colors.primary]}
+                  colors={[theme.colors.primary, theme.colors.primaryContainer]}
                   style={styles.logoGradient}
                 >
                   <MaterialCommunityIcons name="medical-bag" size={40} color="white" />
@@ -203,23 +205,27 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
                 },
               ]}
             >
-              <Text variant="bodySmall" style={styles.quickLoginTitle}>
-                Quick Demo Access:
+              <Text variant="bodyMedium" style={styles.quickLoginTitle}>
+                Quick Demo Access
               </Text>
               <View style={styles.quickLoginButtons}>
                 <Chip
                   icon="doctor"
+                  mode="outlined"
                   onPress={() => handleQuickLogin('doctor')}
-                  style={[styles.quickLoginChip, { backgroundColor: theme.colors.primaryContainer }]}
+                  style={[styles.quickLoginChip, { backgroundColor: 'rgba(255,255,255,0.15)' }]}
+                  textStyle={{ color: 'white', fontWeight: '600' }}
                 >
-                  Doctor Login
+                  Doctor Demo
                 </Chip>
                 <Chip
                   icon="account-heart"
+                  mode="outlined"
                   onPress={() => handleQuickLogin('caregiver')}
-                  style={[styles.quickLoginChip, { backgroundColor: theme.colors.secondaryContainer }]}
+                  style={[styles.quickLoginChip, { backgroundColor: 'rgba(255,255,255,0.15)' }]}
+                  textStyle={{ color: 'white', fontWeight: '600' }}
                 >
-                  Caregiver Login
+                  Caregiver Demo
                 </Chip>
               </View>
             </Animated.View>
@@ -227,67 +233,70 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
             {/* Login Form */}
             <Animated.View
               style={[
+                styles.formContainer,
                 {
                   opacity: formOpacity,
                   transform: [{ translateY: formTranslateY }],
                 },
               ]}
             >
-              <Card style={styles.loginCard} elevation={5}>
+              <Card style={styles.loginCard}>
                 <Card.Content style={styles.cardContent}>
                   <View style={styles.cardHeader}>
-                    <MaterialCommunityIcons name="login" size={24} color={theme.colors.primary} />
-                    <Text variant="titleLarge" style={[styles.cardTitle, { color: theme.colors.primary }]}>
-                      Sign In
+                    <MaterialCommunityIcons
+                      name="shield-account"
+                      size={28}
+                      color={theme.colors.primary}
+                    />
+                    <Text variant="headlineSmall" style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+                      Secure Login
                     </Text>
                   </View>
 
                   <TextInput
                     label="Email Address"
                     value={email}
-                    onChangeText={(text) => {
-                      setEmail(text);
-                      if (errors.email) setErrors({ ...errors, email: undefined });
-                    }}
+                    onChangeText={setEmail}
                     mode="outlined"
+                    style={styles.input}
+                    outlineStyle={styles.inputOutline}
+                    left={<TextInput.Icon icon="email" />}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoComplete="email"
-                    left={<TextInput.Icon icon="email" />}
-                    style={styles.input}
-                    outlineStyle={styles.inputOutline}
+                    textContentType="emailAddress"
                     error={!!errors.email}
-                    disabled={loading}
                   />
-                  <HelperText type="error" visible={!!errors.email} style={styles.helperText}>
-                    {errors.email}
-                  </HelperText>
+                  {errors.email && (
+                    <HelperText type="error" style={styles.helperText}>
+                      {errors.email}
+                    </HelperText>
+                  )}
 
                   <TextInput
                     label="Password"
                     value={password}
-                    onChangeText={(text) => {
-                      setPassword(text);
-                      if (errors.password) setErrors({ ...errors, password: undefined });
-                    }}
+                    onChangeText={setPassword}
                     mode="outlined"
-                    secureTextEntry={!showPassword}
-                    autoComplete="password"
+                    style={styles.input}
+                    outlineStyle={styles.inputOutline}
                     left={<TextInput.Icon icon="lock" />}
                     right={
                       <TextInput.Icon
-                        icon={showPassword ? 'eye-off' : 'eye'}
+                        icon={showPassword ? "eye-off" : "eye"}
                         onPress={() => setShowPassword(!showPassword)}
                       />
                     }
-                    style={styles.input}
-                    outlineStyle={styles.inputOutline}
+                    secureTextEntry={!showPassword}
+                    autoComplete="password"
+                    textContentType="password"
                     error={!!errors.password}
-                    disabled={loading}
                   />
-                  <HelperText type="error" visible={!!errors.password} style={styles.helperText}>
-                    {errors.password}
-                  </HelperText>
+                  {errors.password && (
+                    <HelperText type="error" style={styles.helperText}>
+                      {errors.password}
+                    </HelperText>
+                  )}
 
                   <Button
                     mode="contained"
@@ -296,7 +305,7 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
                     disabled={loading}
                     style={styles.loginButton}
                     contentStyle={styles.buttonContent}
-                    labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
+                    labelStyle={{ fontSize: 16, fontWeight: '600' }}
                   >
                     {loading ? 'Signing In...' : 'Sign In'}
                   </Button>
@@ -305,7 +314,7 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
                     mode="text"
                     onPress={handleForgotPassword}
                     style={styles.forgotButton}
-                    disabled={loading}
+                    labelStyle={{ color: theme.colors.primary, fontWeight: '600' }}
                   >
                     Forgot Password?
                   </Button>
@@ -316,33 +325,67 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
             {/* Sign Up Section */}
             <Animated.View
               style={[
+                styles.signupContainer,
                 {
                   opacity: formOpacity,
                   transform: [{ translateY: formTranslateY }],
                 },
               ]}
             >
-              <Card style={styles.signupCard} elevation={4}>
-                <Card.Content style={styles.signupContainer}>
-                  <Text variant="titleMedium" style={[styles.signupText, { color: theme.colors.onSurface }]}>
-                    New to DemCare?
-                  </Text>
-                  <Button
-                    mode="outlined"
-                    onPress={() => navigation.navigate('SignUp')}
-                    style={[styles.signupButton, { borderColor: theme.colors.primary }]}
-                    disabled={loading}
-                  >
-                    Create Account
-                  </Button>
-                </Card.Content>
+              <Card style={styles.signupCard}>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.1)']}
+                  style={styles.signupGradient}
+                >
+                  <Card.Content style={styles.signupCardContent}>
+                    <View style={styles.signupHeader}>
+                      <MaterialCommunityIcons 
+                        name="account-plus-outline" 
+                        size={20} 
+                        color="white" 
+                      />
+                      <Text variant="titleMedium" style={styles.signupText}>
+                        New to DemCare?
+                      </Text>
+                    </View>
+                    <Text variant="bodySmall" style={styles.signupDescription}>
+                      Join healthcare professionals worldwide
+                    </Text>
+                    <Button
+                      mode="outlined"
+                      onPress={() => navigation.navigate('SignUp')}
+                      style={styles.signupButton}
+                      contentStyle={styles.signupButtonContent}
+                      labelStyle={styles.signupButtonLabel}
+                    >
+                      Create Free Account
+                    </Button>
+                    
+                    <View style={styles.benefitsContainer}>
+                      <View style={styles.benefitRow}>
+                        <View style={styles.benefitItem}>
+                          <MaterialCommunityIcons name="check" size={14} color="#4CAF50" />
+                          <Text style={styles.benefitText}>Free</Text>
+                        </View>
+                        <View style={styles.benefitItem}>
+                          <MaterialCommunityIcons name="check" size={14} color="#4CAF50" />
+                          <Text style={styles.benefitText}>No Card</Text>
+                        </View>
+                        <View style={styles.benefitItem}>
+                          <MaterialCommunityIcons name="check" size={14} color="#4CAF50" />
+                          <Text style={styles.benefitText}>2 Min Setup</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </Card.Content>
+                </LinearGradient>
               </Card>
             </Animated.View>
 
             {/* Footer */}
             <View style={styles.footer}>
               <Text variant="bodySmall" style={styles.footerText}>
-                © 2024 DemCare. Secure & HIPAA Compliant
+                Powered by Advanced Healthcare Technology
               </Text>
               <View style={styles.securityIndicators}>
                 <MaterialCommunityIcons name="shield-check" size={16} color="rgba(255,255,255,0.7)" />
@@ -362,7 +405,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gradientBackground: {
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: height * 1.2, // Fixed height to prevent gradient shifting
   },
   keyboardView: {
     flex: 1,
@@ -370,19 +417,21 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     padding: 20,
+    paddingTop: 40,
     justifyContent: 'center',
+    minHeight: height - 100, // Ensure minimum height
   },
   header: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 24,
   },
   logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 90,
+    height: 90,
+    borderRadius: 45,
     overflow: 'hidden',
-    marginBottom: 20,
-    elevation: 5,
+    marginBottom: 16,
+    elevation: 8,
   },
   logoGradient: {
     flex: 1,
@@ -391,20 +440,29 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 6,
     color: 'white',
     textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
     color: 'rgba(255,255,255,0.9)',
-    marginBottom: 8,
+    marginBottom: 6,
     textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
   description: {
     color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
-    paddingHorizontal: 20,
-    lineHeight: 20,
+    paddingHorizontal: 16,
+    lineHeight: 18,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
   quickLoginContainer: {
     marginBottom: 20,
@@ -414,28 +472,35 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.8)',
     marginBottom: 12,
     textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '500',
   },
   quickLoginButtons: {
     flexDirection: 'row',
     gap: 12,
   },
   quickLoginChip: {
-    elevation: 2,
+    elevation: 3,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  formContainer: {
+    marginBottom: 16,
   },
   loginCard: {
-    borderRadius: 24,
-    marginBottom: 20,
+    borderRadius: 20,
+    marginBottom: 16,
     overflow: 'hidden',
-    elevation: 5,
+    elevation: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
   cardContent: {
-    padding: 28,
+    padding: 24,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 28,
+    marginBottom: 24,
   },
   cardTitle: {
     marginLeft: 12,
@@ -446,52 +511,113 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   inputOutline: {
-    borderRadius: 16,
+    borderRadius: 12,
+    borderWidth: 1.5,
   },
   helperText: {
     marginBottom: 12,
+    fontSize: 12,
   },
   buttonContent: {
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
   loginButton: {
-    marginTop: 20,
-    marginBottom: 16,
-    borderRadius: 16,
+    marginTop: 16,
+    marginBottom: 12,
+    borderRadius: 12,
     elevation: 4,
   },
   forgotButton: {
     alignSelf: 'center',
-  },
-  signupCard: {
-    borderRadius: 20,
-    marginBottom: 20,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    elevation: 5,
+    marginTop: 4,
   },
   signupContainer: {
+    marginBottom: 16,
+  },
+  signupCard: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'transparent',
+  },
+  signupGradient: {
+    borderRadius: 16,
+  },
+  signupCardContent: {
+    padding: 20,
     alignItems: 'center',
-    padding: 24,
+  },
+  signupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
   },
   signupText: {
-    marginBottom: 16,
+    marginLeft: 6,
     fontWeight: '600',
     color: 'white',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  signupDescription: {
+    color: 'rgba(255,255,255,0.85)',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontSize: 12,
+    fontWeight: '500',
   },
   signupButton: {
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 10,
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  signupButtonContent: {
+    paddingVertical: 8,
+  },
+  signupButtonLabel: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  benefitsContainer: {
+    width: '100%',
+  },
+  benefitRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  benefitText: {
+    marginLeft: 4,
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.9)',
+    fontWeight: '500',
   },
   footer: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 16,
+    marginTop: 8,
   },
   footerText: {
     opacity: 0.7,
     color: 'white',
     marginBottom: 8,
+    fontSize: 12,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
   securityIndicators: {
     flexDirection: 'row',

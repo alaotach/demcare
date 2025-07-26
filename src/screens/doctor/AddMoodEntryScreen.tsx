@@ -124,12 +124,22 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
           {/* Header */}
           <Card style={styles.headerCard}>
             <Card.Content>
-              <Text variant="headlineSmall" style={styles.title}>
-                😊 Mood Check-in
-              </Text>
-              <Text variant="bodyMedium" style={styles.subtitle}>
-                How is {patient.fullName} feeling today?
-              </Text>
+              <View style={styles.headerContent}>
+                <IconButton
+                  icon="arrow-left"
+                  size={24}
+                  onPress={() => navigation.goBack()}
+                  style={styles.backButton}
+                />
+                <View style={styles.headerText}>
+                  <Text variant="headlineSmall" style={styles.title}>
+                    😊 Mood Check-in
+                  </Text>
+                  <Text variant="bodyMedium" style={styles.subtitle}>
+                    How is {patient.fullName} feeling today?
+                  </Text>
+                </View>
+              </View>
             </Card.Content>
           </Card>
 
@@ -286,6 +296,19 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     opacity: 0.7,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginLeft: -8,
+  },
+  backButton: {
+    margin: 0,
+    marginTop: -8,
+  },
+  headerText: {
+    flex: 1,
+    marginLeft: -8,
   },
   card: {
     marginBottom: 16,

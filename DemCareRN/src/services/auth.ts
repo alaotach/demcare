@@ -57,6 +57,35 @@ export class AuthService {
 
   static async signIn(data: SignInData): Promise<User> {
     try {
+      // Handle demo credentials without Firebase authentication
+      if (data.email === 'doctor@demcare.com' && data.password === 'doctor123') {
+        return {
+          id: 'demo-doctor-123',
+          email: 'doctor@demcare.com',
+          fullName: 'Dr. Sarah Johnson',
+          username: 'dr_sarah',
+          phoneNumber: '+1 (555) 123-4567',
+          age: 35,
+          role: UserRole.DOCTOR,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
+
+      if (data.email === 'caregiver@demcare.com' && data.password === 'caregiver123') {
+        return {
+          id: 'demo-caregiver-456',
+          email: 'caregiver@demcare.com',
+          fullName: 'Maria Rodriguez',
+          username: 'maria_care',
+          phoneNumber: '+1 (555) 987-6543',
+          age: 28,
+          role: UserRole.CAREGIVER,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
+
       const userCredential = await signInWithEmailAndPassword(
         auth,
         data.email,
@@ -77,6 +106,9 @@ export class AuthService {
         updatedAt: userData.updatedAt instanceof Date ? userData.updatedAt : new Date(userData.updatedAt)
       };
     } catch (error) {
+      if (error instanceof Error && error.message.includes('User data not found')) {
+        throw error;
+      }
       throw new Error(`Sign in failed: ${error}`);
     }
   }
@@ -121,6 +153,13 @@ export class AuthService {
   static onAuthStateChanged(callback: (user: User | null) => void) {
     return onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
+        // Check if this is a demo user
+        if (firebaseUser.uid === 'demo-doctor-123' || firebaseUser.uid === 'demo-caregiver-456') {
+          // For demo users, we don't call getCurrentUser since they're not in Firestore
+          callback(null);
+          return;
+        }
+        
         const user = await this.getCurrentUser();
         callback(user);
       } else {

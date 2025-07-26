@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, Dimensions, RefreshControl, Animated } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Alert, Dimensions, RefreshControl, Animated, Platform } from 'react-native';
 import { 
   Card, 
   Button, 
@@ -12,7 +12,11 @@ import {
   Snackbar,
   List,
   Divider,
-  Surface
+  Surface,
+  FAB,
+  Portal,
+  Modal,
+  ProgressBar
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
@@ -36,6 +40,14 @@ export default function CameraFeedScreen() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [cameraStatus, setCameraStatus] = useState<any>(null);
   const [showPresets, setShowPresets] = useState(false);
+  const [connectionProgress, setConnectionProgress] = useState(0);
+  const [showHelp, setShowHelp] = useState(false);
+  
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
 
   // Predefined camera presets
   const cameraPresets: CameraPreset[] = [
@@ -59,7 +71,45 @@ export default function CameraFeedScreen() {
   useEffect(() => {
     // Auto-detect local camera server
     detectLocalCameraServer();
-  }, []);
+    
+    // Initialize animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    
+    // Pulse animation for live indicator
+    const pulseLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.2,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    
+    if (isConnected) {
+      pulseLoop.start();
+    } else {
+      pulseLoop.stop();
+    }
+    
+    return () => pulseLoop.stop();
+  }, [isConnected]);
 
   const detectLocalCameraServer = async () => {
     // Try to detect DemCare camera server on local network
@@ -116,33 +166,74 @@ export default function CameraFeedScreen() {
 
     setLoading(true);
     setConnectionStatus('connecting');
+    setConnectionProgress(0);
+
+    // Animate progress bar
+    Animated.timing(progressAnim, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start();
 
     try {
+      // Simulate connection steps with progress updates
+      setConnectionProgress(0.2);
+      showSnackbar('Establishing connection...');
+      
       // Test connection to the camera
       const baseUrl = ipAddress.replace('/video', '');
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      setConnectionProgress(0.5);
+      showSnackbar('Checking camera status...');
       
       const response = await fetch(`http://${baseUrl}/api/status`, { 
         signal: controller.signal 
       });
       
       clearTimeout(timeoutId);
+      setConnectionProgress(0.8);
       
       if (response.ok) {
         const status = await response.json();
         setCameraStatus(status);
+        setConnectionProgress(1);
         setIsConnected(true);
         setConnectionStatus('connected');
-        showSnackbar('Successfully connected to camera');
+        showSnackbar('✅ Successfully connected to camera');
+        
+        // Animate connection success
+        Animated.sequence([
+          Animated.timing(fadeAnim, {
+            toValue: 0.5,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]).start();
       } else {
         throw new Error('Camera not responding');
       }
     } catch (error) {
+      setConnectionProgress(0);
       setConnectionStatus('error');
-      Alert.alert('Connection Failed', 'Unable to connect to camera. Please check:\n• IP address and port\n• Camera server is running\n• Both devices are on same network');
+      Alert.alert(
+        '🚫 Connection Failed', 
+        'Unable to connect to camera. Please check:\n\n• IP address and port are correct\n• Camera server is running\n• Both devices are on same network\n• Firewall settings allow connection',
+        [
+          { text: 'Help', onPress: () => setShowHelp(true) },
+          { text: 'Try Again', onPress: connectToCamera },
+          { text: 'Cancel', style: 'cancel' }
+        ]
+      );
     } finally {
       setLoading(false);
+      progressAnim.setValue(0);
     }
   };
 
@@ -176,37 +267,49 @@ export default function CameraFeedScreen() {
   if (isConnected) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        {/* Enhanced Header */}
-        <Surface style={styles.headerSurface} elevation={3}>
+        {/* Enhanced Header with Live Animation */}
+        <Surface style={styles.headerSurface} elevation={4}>
           <LinearGradient
-            colors={[theme.colors.primary, theme.colors.primaryContainer]}
+            colors={[theme.colors.primary, theme.colors.primaryContainer, theme.colors.secondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.headerGradient}
           >
-            <View style={styles.headerContent}>
+            <Animated.View style={[styles.headerContent, { opacity: fadeAnim }]}>
               <View style={styles.headerLeft}>
                 <View style={styles.titleContainer}>
                   <MaterialIcon name="video" size={24} color="white" />
                   <Text variant="titleLarge" style={styles.headerTitle}>
                     Live Camera Feed
                   </Text>
+                  <Animated.View style={[styles.liveBadge, { transform: [{ scale: pulseAnim }] }]}>
+                    <View style={styles.liveIndicatorDot} />
+                    <Text style={styles.liveText}>LIVE</Text>
+                  </Animated.View>
                 </View>
                 {cameraStatus && (
-                  <View style={styles.statusContainer}>
+                  <Animated.View style={[styles.statusContainer, { opacity: fadeAnim }]}>
                     <Chip 
                       icon="check-circle" 
                       style={styles.statusChip}
                       textStyle={styles.statusChipText}
                       mode="flat"
                     >
-                      {cameraStatus.resolution} • {cameraStatus.fps}fps
+                      {cameraStatus.resolution} • {cameraStatus.fps}fps • Connected
                     </Chip>
-                  </View>
+                  </Animated.View>
                 )}
               </View>
               <View style={styles.headerActions}>
-                <Surface style={styles.actionButton} elevation={2}>
+                <Surface style={styles.actionButton} elevation={3}>
+                  <IconButton
+                    icon="fullscreen"
+                    onPress={() => {/* Handle fullscreen */}}
+                    iconColor="white"
+                    size={20}
+                  />
+                </Surface>
+                <Surface style={styles.actionButton} elevation={3}>
                   <IconButton
                     icon="refresh"
                     onPress={refreshConnection}
@@ -214,7 +317,7 @@ export default function CameraFeedScreen() {
                     size={20}
                   />
                 </Surface>
-                <Surface style={styles.actionButton} elevation={2}>
+                <Surface style={styles.actionButton} elevation={3}>
                   <IconButton
                     icon="close"
                     onPress={disconnectCamera}
@@ -223,12 +326,13 @@ export default function CameraFeedScreen() {
                   />
                 </Surface>
               </View>
-            </View>
+            </Animated.View>
           </LinearGradient>
         </Surface>
         
-        <View style={styles.videoContainer}>
-          <Surface style={styles.videoFrame} elevation={4}>
+        {/* Enhanced Video Container */}
+        <Animated.View style={[styles.videoContainer, { opacity: fadeAnim }]}>
+          <Surface style={styles.videoFrame} elevation={6}>
             <WebView
               source={{ uri: getCameraUrl() }}
               style={styles.webview}
@@ -241,39 +345,54 @@ export default function CameraFeedScreen() {
               startInLoadingState={true}
               renderLoading={() => (
                 <View style={styles.loadingOverlay}>
-                  <Surface style={styles.loadingCard} elevation={3}>
+                  <Surface style={styles.loadingCard} elevation={4}>
                     <ActivityIndicator size="large" color={theme.colors.primary} />
                     <Text style={styles.loadingText}>Loading camera feed...</Text>
+                    <Text style={styles.loadingSubtext}>Please wait while we connect</Text>
                   </Surface>
                 </View>
               )}
             />
             {loading && (
               <View style={styles.loadingOverlay}>
-                <Surface style={styles.loadingCard} elevation={3}>
+                <Surface style={styles.loadingCard} elevation={4}>
                   <ActivityIndicator size="large" color={theme.colors.primary} />
                   <Text style={styles.loadingText}>Loading camera feed...</Text>
+                  <Text style={styles.loadingSubtext}>Please wait while we connect</Text>
                 </Surface>
               </View>
             )}
+            
+            {/* Video Controls Overlay */}
+            <View style={styles.videoControls}>
+              <Surface style={styles.controlButton} elevation={2}>
+                <IconButton icon="record" iconColor="red" size={20} />
+              </Surface>
+              <Surface style={styles.controlButton} elevation={2}>
+                <IconButton icon="camera" iconColor="white" size={20} />
+              </Surface>
+            </View>
           </Surface>
-        </View>
+        </Animated.View>
         
-        <Surface style={styles.footer} elevation={2}>
-          <View style={styles.footerContent}>
+        {/* Enhanced Footer */}
+        <Surface style={styles.footer} elevation={3}>
+          <Animated.View style={[styles.footerContent, { opacity: fadeAnim }]}>
             <MaterialIcon name="wifi" size={20} color={theme.colors.primary} />
             <Text variant="bodyMedium" style={styles.connectionText}>
               Connected to {ipAddress.split(':')[0]}
             </Text>
-            <Chip 
-              icon="circle" 
-              style={styles.liveIndicator}
-              textStyle={styles.liveText}
-              mode="flat"
-            >
-              LIVE
-            </Chip>
-          </View>
+            <View style={styles.footerActions}>
+              <Chip 
+                icon="circle" 
+                style={styles.liveIndicator}
+                textStyle={styles.liveChipText}
+                mode="flat"
+              >
+                STREAMING
+              </Chip>
+            </View>
+          </Animated.View>
         </Surface>
       </SafeAreaView>
     );
@@ -382,12 +501,30 @@ export default function CameraFeedScreen() {
             onPress={connectToCamera}
             loading={loading}
             disabled={loading || !ipAddress.trim()}
-            style={styles.connectButton}
+            style={[styles.connectButton, loading && styles.connectButtonLoading]}
             contentStyle={styles.buttonContent}
-            icon="video"
+            icon={loading ? "loading" : "video"}
+            buttonColor={connectionStatus === 'error' ? theme.colors.error : theme.colors.primary}
           >
             {loading ? 'Connecting...' : 'Connect to Camera'}
           </Button>
+
+          {/* Connection Progress */}
+          {loading && (
+            <Animated.View style={[styles.progressContainer, { opacity: fadeAnim }]}>
+              <ProgressBar 
+                progress={connectionProgress} 
+                color={theme.colors.primary}
+                style={styles.progressBar}
+              />
+              <Text variant="bodySmall" style={styles.progressText}>
+                {connectionProgress === 0.2 && 'Establishing connection...'}
+                {connectionProgress === 0.5 && 'Checking camera status...'}
+                {connectionProgress === 0.8 && 'Finalizing connection...'}
+                {connectionProgress === 1 && 'Connected successfully!'}
+              </Text>
+            </Animated.View>
+          )}
 
           {cameraStatus && (
             <Surface style={styles.statusCard} elevation={2}>
@@ -448,15 +585,95 @@ export default function CameraFeedScreen() {
         </Surface>
       </ScrollView>
 
+      {/* Help FAB */}
+      <FAB
+        icon="help-circle"
+        style={styles.helpFab}
+        onPress={() => setShowHelp(true)}
+        label="Help"
+        variant="tertiary"
+      />
+
+      {/* Help Modal */}
+      <Portal>
+        <Modal 
+          visible={showHelp} 
+          onDismiss={() => setShowHelp(false)}
+          contentContainerStyle={styles.helpModal}
+        >
+          <Surface style={styles.helpContent} elevation={4}>
+            <View style={styles.helpHeader}>
+              <MaterialIcon name="help-circle" size={32} color={theme.colors.primary} />
+              <Text variant="headlineSmall" style={styles.helpTitle}>
+                Connection Help
+              </Text>
+              <IconButton
+                icon="close"
+                onPress={() => setShowHelp(false)}
+                style={styles.helpClose}
+              />
+            </View>
+            
+            <Divider style={styles.helpDivider} />
+            
+            <View style={styles.helpSection}>
+              <Text variant="titleMedium" style={styles.helpSectionTitle}>
+                Common Issues & Solutions
+              </Text>
+              
+              {[
+                {
+                  issue: "Camera not found",
+                  solution: "Ensure the camera server is running and both devices are on the same network"
+                },
+                {
+                  issue: "Connection timeout",
+                  solution: "Check firewall settings and try a different IP address"
+                },
+                {
+                  issue: "Invalid format",
+                  solution: "Use format: IP:PORT/path (e.g., 192.168.1.100:5000/video)"
+                },
+                {
+                  issue: "Stream not loading",
+                  solution: "Try refreshing the connection or check camera server logs"
+                }
+              ].map((item, index) => (
+                <View key={index} style={styles.helpItem}>
+                  <MaterialIcon name="alert-circle" size={16} color={theme.colors.error} />
+                  <View style={styles.helpItemContent}>
+                    <Text variant="bodyMedium" style={styles.helpItemTitle}>
+                      {item.issue}
+                    </Text>
+                    <Text variant="bodySmall" style={styles.helpItemText}>
+                      {item.solution}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            <Button
+              mode="contained"
+              onPress={() => setShowHelp(false)}
+              style={styles.helpCloseButton}
+            >
+              Got it!
+            </Button>
+          </Surface>
+        </Modal>
+      </Portal>
+
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
+        duration={4000}
         action={{
           label: 'OK',
           onPress: () => setSnackbarVisible(false),
         }}
         style={styles.snackbar}
+        wrapperStyle={styles.snackbarWrapper}
       >
         {snackbarMessage}
       </Snackbar>
@@ -491,7 +708,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     textAlign: 'center',
     marginBottom: 4,
   },
@@ -580,7 +797,7 @@ const styles = StyleSheet.create({
   },
   liveText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '700',
     fontSize: 12,
   },
   // Setup View Styles
@@ -724,6 +941,140 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   snackbar: {
+    borderRadius: 12,
+  },
+  snackbarWrapper: {
+    paddingHorizontal: 16,
+  },
+  
+  // New Enhanced Styles
+  liveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginLeft: 12,
+  },
+  liveIndicatorDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FF4444',
+    marginRight: 4,
+  },
+  liveChipText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 11,
+  },
+  loadingSubtext: {
+    marginTop: 8,
+    opacity: 0.7,
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  videoControls: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  controlButton: {
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  footerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  connectButtonLoading: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+  progressContainer: {
+    marginTop: 16,
+    padding: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    borderRadius: 12,
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  progressText: {
+    marginTop: 8,
+    textAlign: 'center',
+    opacity: 0.7,
+    fontStyle: 'italic',
+  },
+  helpFab: {
+    position: 'absolute',
+    bottom: 80,
+    right: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  helpModal: {
+    margin: 20,
+    borderRadius: 20,
+  },
+  helpContent: {
+    borderRadius: 20,
+    padding: 24,
+    maxHeight: '80%',
+  },
+  helpHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  helpTitle: {
+    flex: 1,
+    marginLeft: 12,
+    fontWeight: '600',
+  },
+  helpClose: {
+    margin: 0,
+  },
+  helpDivider: {
+    marginBottom: 20,
+  },
+  helpSection: {
+    marginBottom: 24,
+  },
+  helpSectionTitle: {
+    marginBottom: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  helpItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#FF6B6B',
+  },
+  helpItemContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  helpItemTitle: {
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#333',
+  },
+  helpItemText: {
+    opacity: 0.7,
+    lineHeight: 18,
+  },
+  helpCloseButton: {
+    marginTop: 8,
     borderRadius: 12,
   },
 });

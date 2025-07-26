@@ -12,6 +12,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, MoodEntry } from '../../types';
 
@@ -117,22 +118,39 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
     </View>
   );
 
+  const renderHeader = () => (
+    <Surface style={styles.headerSurface} elevation={4}>
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primaryContainer]}
+        style={styles.headerGradient}
+      >
+        <View style={styles.headerContent}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#FFFFFF"
+            size={24}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          />
+          <MaterialCommunityIcons name="emoticon-happy" size={32} color="#FFFFFF" />
+          <View style={styles.headerText}>
+            <Text variant="headlineSmall" style={styles.headerTitle}>
+              Mood Check-in
+            </Text>
+            <Text variant="bodyMedium" style={styles.headerSubtitle}>
+              How is {patient.fullName} feeling today?
+            </Text>
+          </View>
+        </View>
+      </LinearGradient>
+    </Surface>
+  );
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
-          {/* Header */}
-          <Card style={styles.headerCard}>
-            <Card.Content>
-              <Text variant="headlineSmall" style={styles.title}>
-                😊 Mood Check-in
-              </Text>
-              <Text variant="bodyMedium" style={styles.subtitle}>
-                How is {patient.fullName} feeling today?
-              </Text>
-            </Card.Content>
-          </Card>
-
           {/* Mood Selection */}
           <Card style={styles.card}>
             <Card.Content>
@@ -268,24 +286,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerSurface: {
+    elevation: 4,
+  },
+  headerGradient: {
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerText: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  backButton: {
+    margin: 0,
+    marginRight: 8,
+  },
   scrollView: {
     flex: 1,
   },
   content: {
     padding: 20,
-  },
-  headerCard: {
-    marginBottom: 16,
-    elevation: 4,
-  },
-  title: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    textAlign: 'center',
-    opacity: 0.7,
   },
   card: {
     marginBottom: 16,

@@ -1,36 +1,106 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Dimensions } from 'react-native';
-import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
+import { 
+  View, 
+  StyleSheet, 
+  Animated, 
+  Dimensions, 
+  StatusBar,
+  Platform 
+} from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function LoadingScreen() {
   const theme = useTheme();
-  const scaleAnim = useRef(new Animated.Value(0.5)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const slideUpAnim = useRef(new Animated.Value(50)).current;
+  const dotsAnim1 = useRef(new Animated.Value(0)).current;
+  const dotsAnim2 = useRef(new Animated.Value(0)).current;
+  const dotsAnim3 = useRef(new Animated.Value(0)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Logo animation
+    // Initial entrance animation
     Animated.parallel([
       Animated.spring(scaleAnim, {
         toValue: 1,
         useNativeDriver: true,
+        tension: 50,
+        friction: 7,
       }),
       Animated.timing(opacityAnim, {
         toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideUpAnim, {
+        toValue: 0,
         duration: 800,
         useNativeDriver: true,
       })
     ]).start();
 
-    // Continuous rotation animation
+    // Continuous pulse animation for logo
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // Loading dots animation
+    const createDotAnimation = (anim: Animated.Value, delay: number) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.timing(anim, {
+            toValue: 1,
+            duration: 600,
+            delay,
+            useNativeDriver: true,
+          }),
+          Animated.timing(anim, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    };
+
+    Animated.parallel([
+      createDotAnimation(dotsAnim1, 0),
+      createDotAnimation(dotsAnim2, 200),
+      createDotAnimation(dotsAnim3, 400),
+    ]).start();
+
+    // Progress bar animation
+    Animated.loop(
+      Animated.timing(progressAnim, {
+        toValue: 1,
+        duration: 2000,
+        useNativeDriver: false,
+      })
+    ).start();
+
+    // Rotation animation for decorative elements
     Animated.loop(
       Animated.timing(rotateAnim, {
         toValue: 1,
-        duration: 2000,
+        duration: 3000,
         useNativeDriver: true,
       })
     ).start();
@@ -41,136 +111,387 @@ export default function LoadingScreen() {
     outputRange: ['0deg', '360deg'],
   });
 
+  const progressWidth = progressAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <LinearGradient
-        colors={[theme.colors.primary, theme.colors.primaryContainer, theme.colors.background]}
-        style={styles.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View style={styles.content}>
+    <>
+      <StatusBar 
+        translucent 
+        backgroundColor="transparent" 
+        barStyle="light-content" 
+      />
+      <View style={styles.container}>
+        <LinearGradient
+          colors={[
+            '#667eea',
+            '#764ba2',
+            '#f093fb',
+            '#f5576c',
+            '#4facfe',
+            '#00f2fe'
+          ]}
+          style={styles.gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          locations={[0, 0.2, 0.4, 0.6, 0.8, 1]}
+        >
+          {/* Animated Background Elements */}
           <Animated.View 
             style={[
-              styles.logoContainer,
-              {
-                transform: [{ scale: scaleAnim }],
-                opacity: opacityAnim,
-              }
+              styles.backgroundCircle1,
+              { transform: [{ rotate }] }
             ]}
-          >
-            <View style={styles.logoBackground}>
-              <MaterialCommunityIcons 
-                name="medical-bag" 
-                size={64} 
-                color="white" 
-              />
-            </View>
-          </Animated.View>
-
-          <Animated.View
+          />
+          <Animated.View 
             style={[
-              {
-                opacity: opacityAnim,
-                transform: [{ scale: scaleAnim }]
-              }
+              styles.backgroundCircle2,
+              { transform: [{ rotate: rotate }] }
             ]}
-          >
-            <Text 
-              style={[styles.text, { color: 'white' }]} 
-              variant="headlineLarge"
-            >
-              DemCare
-            </Text>
-          </Animated.View>
+          />
 
-          <Animated.View
+          {/* Main Content */}
+          <Animated.View 
             style={[
+              styles.content,
               {
                 opacity: opacityAnim,
+                transform: [
+                  { scale: scaleAnim },
+                  { translateY: slideUpAnim }
+                ]
               }
             ]}
           >
-            <Text 
-              style={[styles.subText, { color: 'rgba(255,255,255,0.8)' }]} 
-              variant="titleMedium"
+            {/* Logo Container */}
+            <Animated.View 
+              style={[
+                styles.logoContainer,
+                {
+                  transform: [{ scale: pulseAnim }]
+                }
+              ]}
             >
-              Patient Monitoring System
-            </Text>
-          </Animated.View>
-
-          <View style={styles.loadingContainer}>
-            <Animated.View style={{ transform: [{ rotate }] }}>
-              <MaterialCommunityIcons 
-                name="loading" 
-                size={32} 
-                color="rgba(255,255,255,0.9)" 
+              <View style={styles.logoBackground}>
+                <LinearGradient
+                  colors={['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.1)']}
+                  style={styles.logoGradient}
+                >
+                  <MaterialCommunityIcons 
+                    name="medical-bag" 
+                    size={72} 
+                    color="white" 
+                  />
+                </LinearGradient>
+              </View>
+              
+              {/* Decorative Ring */}
+              <Animated.View 
+                style={[
+                  styles.decorativeRing,
+                  { transform: [{ rotate }] }
+                ]}
               />
             </Animated.View>
-            <Text variant="bodyLarge" style={styles.loadingText}>
-              Loading...
+
+            {/* App Title */}
+            <Animated.View
+              style={[
+                styles.titleContainer,
+                { opacity: opacityAnim }
+              ]}
+            >
+              <Text 
+                style={styles.title} 
+                variant="displaySmall"
+              >
+                DemCare
+              </Text>
+              <View style={styles.titleUnderline} />
+            </Animated.View>
+
+            {/* Subtitle */}
+            <Animated.View
+              style={[
+                styles.subtitleContainer,
+                { opacity: opacityAnim }
+              ]}
+            >
+              <Text 
+                style={styles.subtitle} 
+                variant="titleLarge"
+              >
+                Patient Monitoring System
+              </Text>
+              <Text 
+                style={styles.tagline} 
+                variant="bodyLarge"
+              >
+                Caring Through Technology
+              </Text>
+            </Animated.View>
+
+            {/* Loading Section */}
+            <Animated.View 
+              style={[
+                styles.loadingSection,
+                { opacity: opacityAnim }
+              ]}
+            >
+              {/* Progress Bar */}
+              <View style={styles.progressContainer}>
+                <View style={styles.progressBar}>
+                  <Animated.View 
+                    style={[
+                      styles.progressFill,
+                      { width: progressWidth }
+                    ]}
+                  />
+                </View>
+              </View>
+
+              {/* Loading Text with Animated Dots */}
+              <View style={styles.loadingTextContainer}>
+                <Text style={styles.loadingText}>Loading</Text>
+                <View style={styles.dotsContainer}>
+                  <Animated.Text 
+                    style={[
+                      styles.dot,
+                      { opacity: dotsAnim1 }
+                    ]}
+                  >
+                    •
+                  </Animated.Text>
+                  <Animated.Text 
+                    style={[
+                      styles.dot,
+                      { opacity: dotsAnim2 }
+                    ]}
+                  >
+                    •
+                  </Animated.Text>
+                  <Animated.Text 
+                    style={[
+                      styles.dot,
+                      { opacity: dotsAnim3 }
+                    ]}
+                  >
+                    •
+                  </Animated.Text>
+                </View>
+              </View>
+
+              {/* Status Text */}
+              <Text style={styles.statusText}>
+                Initializing secure connection...
+              </Text>
+            </Animated.View>
+          </Animated.View>
+
+          {/* Bottom Branding */}
+          <Animated.View 
+            style={[
+              styles.bottomBranding,
+              { opacity: opacityAnim }
+            ]}
+          >
+            <MaterialCommunityIcons 
+              name="shield-check" 
+              size={16} 
+              color="rgba(255,255,255,0.8)" 
+            />
+            <Text style={styles.brandingText}>
+              Secure • Reliable • Professional
             </Text>
-          </View>
-        </View>
-      </LinearGradient>
-    </View>
+          </Animated.View>
+        </LinearGradient>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    width: width,
+    height: height,
   },
   gradient: {
     flex: 1,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    position: 'relative',
+  },
+  backgroundCircle1: {
+    position: 'absolute',
+    top: -100,
+    right: -100,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  backgroundCircle2: {
+    position: 'absolute',
+    bottom: -150,
+    left: -150,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   content: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 40,
+    zIndex: 1,
   },
   logoContainer: {
-    marginBottom: 30,
+    marginBottom: 40,
+    position: 'relative',
   },
   logoBackground: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 8,
     },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.3)',
   },
-  text: {
-    marginTop: 20,
+  logoGradient: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  decorativeRing: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    right: -10,
+    bottom: -10,
+    borderRadius: 80,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.4)',
+    borderStyle: 'dashed',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  title: {
     fontWeight: 'bold',
     textAlign: 'center',
+    color: 'white',
+    fontSize: 42,
+    letterSpacing: 2,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
-  subText: {
-    marginTop: 10,
-    opacity: 0.7,
+  titleUnderline: {
+    width: 80,
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderRadius: 2,
+    marginTop: 8,
+  },
+  subtitleContainer: {
+    alignItems: 'center',
+    marginBottom: 50,
+  },
+  subtitle: {
     textAlign: 'center',
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 20,
+    fontWeight: '600',
+    letterSpacing: 1,
+    marginBottom: 8,
   },
-  loadingContainer: {
+  tagline: {
+    textAlign: 'center',
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 16,
+    fontStyle: 'italic',
+    letterSpacing: 0.5,
+  },
+  loadingSection: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  progressContainer: {
+    width: '100%',
+    marginBottom: 30,
+  },
+  progressBar: {
+    width: '100%',
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderRadius: 3,
+  },
+  loadingTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 40,
+    marginBottom: 15,
   },
   loadingText: {
-    marginLeft: 12,
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    marginLeft: 8,
+  },
+  dot: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 20,
+    marginHorizontal: 2,
+  },
+  statusText: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 14,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  bottomBranding: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 50 : 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  brandingText: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+    marginLeft: 8,
+    letterSpacing: 1,
+    fontWeight: '500',
   },
 });

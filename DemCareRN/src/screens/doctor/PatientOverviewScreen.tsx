@@ -17,7 +17,8 @@ import { LineChart, BarChart, PieChart } from 'react-native-chart-kit';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { usePatientStore } from '../../store/patientStore';
-import { Patient, SleepData, MoodEntry, DietEntry, PhysicalActivity } from '../../types';
+import { useAuthStore } from '../../store/authStore';
+import { Patient, SleepData, MoodEntry, DietEntry, PhysicalActivity, UserRole } from '../../types';
 
 interface Props {
   navigation: any;
@@ -31,6 +32,7 @@ interface Props {
 export default function PatientOverviewScreen({ navigation, route }: Props) {
   const { patient } = route.params;
   const theme = useTheme();
+  const { user } = useAuthStore();
   const { 
     selectedPatient, 
     selectPatient, 
@@ -305,13 +307,15 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
         <Card.Content>
           <View style={styles.sectionHeader}>
             <Text variant="titleMedium" style={styles.sectionTitle}>Sleep Overview</Text>
-            <Button 
-              mode="outlined" 
-              compact
-              onPress={() => navigation.navigate('AddSleepData', { patient })}
-            >
-              Add Entry
-            </Button>
+            {user?.role === UserRole.CAREGIVER && (
+              <Button 
+                mode="outlined" 
+                compact
+                onPress={() => navigation.navigate('AddSleepData', { patient })}
+              >
+                Add Entry
+              </Button>
+            )}
           </View>
           
           {todaySummary.sleep ? (
@@ -410,22 +414,219 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
     </ScrollView>
   );
 
+  const renderMoodTab = () => (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <Card style={styles.card}>
+        <Card.Content>
+          <View style={styles.sectionHeader}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Mood Overview</Text>
+            {user?.role === UserRole.CAREGIVER && (
+              <Button 
+                mode="outlined" 
+                compact
+                onPress={() => navigation.navigate('AddMoodEntry', { patient })}
+              >
+                Add Entry
+              </Button>
+            )}
+          </View>
+          
+          {todaySummary.avgMood > 0 ? (
+            <View style={styles.sleepDetailsContainer}>
+              <View style={styles.sleepDetailRow}>
+                <Text variant="bodyMedium">Average Mood Today:</Text>
+                <Text variant="bodyMedium" style={{ color: todaySummary.avgMood >= 4 ? '#4CAF50' : todaySummary.avgMood >= 3 ? '#FF9800' : '#F44336' }}>
+                  {todaySummary.avgMood.toFixed(1)}/5
+                </Text>
+              </View>
+              <View style={styles.sleepDetailRow}>
+                <Text variant="bodyMedium">Mood Entries:</Text>
+                <Text variant="bodyMedium">{patientMoodData.filter(m => new Date(m.timestamp).toDateString() === new Date().toDateString()).length}</Text>
+              </View>
+            </View>
+          ) : (
+            <Text style={styles.noDataText}>No mood data for today</Text>
+          )}
+        </Card.Content>
+      </Card>
+
+      {/* Recent Mood Entries */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.sectionTitle}>Recent Mood Entries</Text>
+          {patientMoodData.slice(0, 5).map((mood, index) => (
+            <View key={mood.id} style={styles.entryItem}>
+              <View style={styles.entryHeader}>
+                <Text variant="bodyMedium" style={styles.entryDate}>
+                  {new Date(mood.timestamp).toLocaleDateString()}
+                </Text>
+                <Text variant="bodyMedium" style={{ color: mood.moodScore >= 4 ? '#4CAF50' : mood.moodScore >= 3 ? '#FF9800' : '#F44336' }}>
+                  {mood.moodScore}/5
+                </Text>
+              </View>
+              <Text variant="bodySmall" style={styles.entryDetails}>
+                Mood: {mood.mood} • Anxiety: {mood.anxiety}/5 • Energy: {mood.energy}/5
+              </Text>
+              {mood.notes && (
+                <Text variant="bodySmall" style={styles.entryNotes}>{mood.notes}</Text>
+              )}
+              {index < patientMoodData.slice(0, 5).length - 1 && <Divider style={styles.entryDivider} />}
+            </View>
+          ))}
+        </Card.Content>
+      </Card>
+
+      <View style={styles.bottomPadding} />
+    </ScrollView>
+  );
+
+  const renderDietTab = () => (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <Card style={styles.card}>
+        <Card.Content>
+          <View style={styles.sectionHeader}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Diet Overview</Text>
+            {user?.role === UserRole.CAREGIVER && (
+              <Button 
+                mode="outlined" 
+                compact
+                onPress={() => navigation.navigate('AddDietEntry', { patient })}
+              >
+                Add Entry
+              </Button>
+            )}
+          </View>
+          
+          <View style={styles.sleepDetailsContainer}>
+            <View style={styles.sleepDetailRow}>
+              <Text variant="bodyMedium">Meals Today:</Text>
+              <Text variant="bodyMedium">{todaySummary.totalMeals}</Text>
+            </View>
+            <View style={styles.sleepDetailRow}>
+              <Text variant="bodyMedium">Water Intake:</Text>
+              <Text variant="bodyMedium">{todaySummary.totalWater}ml</Text>
+            </View>
+          </View>
+        </Card.Content>
+      </Card>
+
+      {/* Recent Diet Entries */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.sectionTitle}>Recent Diet Entries</Text>
+          {patientDietData.slice(0, 5).map((diet, index) => (
+            <View key={diet.id} style={styles.entryItem}>
+              <View style={styles.entryHeader}>
+                <Text variant="bodyMedium" style={styles.entryDate}>
+                  {new Date(diet.timestamp).toLocaleDateString()}
+                </Text>
+                <Text variant="bodyMedium">{diet.mealType}</Text>
+              </View>
+              <Text variant="bodySmall" style={styles.entryDetails}>
+                Calories: {diet.calories} • Water: {diet.waterIntake}ml
+              </Text>
+              {diet.notes && (
+                <Text variant="bodySmall" style={styles.entryNotes}>{diet.notes}</Text>
+              )}
+              {index < patientDietData.slice(0, 5).length - 1 && <Divider style={styles.entryDivider} />}
+            </View>
+          ))}
+        </Card.Content>
+      </Card>
+
+      <View style={styles.bottomPadding} />
+    </ScrollView>
+  );
+
+  const renderActivityTab = () => (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <Card style={styles.card}>
+        <Card.Content>
+          <View style={styles.sectionHeader}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Activity Overview</Text>
+            {user?.role === UserRole.CAREGIVER && (
+              <Button 
+                mode="outlined" 
+                compact
+                onPress={() => navigation.navigate('AddActivityEntry', { patient })}
+              >
+                Add Entry
+              </Button>
+            )}
+          </View>
+          
+          <View style={styles.sleepDetailsContainer}>
+            <View style={styles.sleepDetailRow}>
+              <Text variant="bodyMedium">Total Activity Today:</Text>
+              <Text variant="bodyMedium">{todaySummary.totalActivity} min</Text>
+            </View>
+            <View style={styles.sleepDetailRow}>
+              <Text variant="bodyMedium">Bathroom Visits:</Text>
+              <Text variant="bodyMedium">{todaySummary.bathroomVisits}</Text>
+            </View>
+          </View>
+        </Card.Content>
+      </Card>
+
+      {/* Recent Activity Entries */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.sectionTitle}>Recent Activities</Text>
+          {patientActivityData.slice(0, 5).map((activity, index) => (
+            <View key={activity.id} style={styles.entryItem}>
+              <View style={styles.entryHeader}>
+                <Text variant="bodyMedium" style={styles.entryDate}>
+                  {new Date(activity.date).toLocaleDateString()}
+                </Text>
+                <Text variant="bodyMedium">{activity.type}</Text>
+              </View>
+              <Text variant="bodySmall" style={styles.entryDetails}>
+                Duration: {activity.duration} min • Intensity: {activity.intensity}
+              </Text>
+              {activity.notes && (
+                <Text variant="bodySmall" style={styles.entryNotes}>{activity.notes}</Text>
+              )}
+              {index < patientActivityData.slice(0, 5).length - 1 && <Divider style={styles.entryDivider} />}
+            </View>
+          ))}
+        </Card.Content>
+      </Card>
+
+      <View style={styles.bottomPadding} />
+    </ScrollView>
+  );
+
+  const renderHeader = () => (
+    <Surface style={styles.headerSurface} elevation={4}>
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primaryContainer]}
+        style={styles.headerGradient}
+      >
+        <View style={styles.headerContent}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#FFFFFF"
+            size={24}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          />
+          <MaterialCommunityIcons name="account-details" size={32} color="#FFFFFF" />
+          <View style={styles.headerText}>
+            <Text variant="titleLarge" style={styles.headerTitle}>
+              {patient.fullName}
+            </Text>
+            <Text variant="bodyMedium" style={styles.headerSubtitle}>
+              Patient Overview
+            </Text>
+          </View>
+        </View>
+      </LinearGradient>
+    </Surface>
+  );
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text variant="headlineSmall" style={styles.headerTitle}>
-            {patient.fullName}
-          </Text>
-          <Text variant="bodyMedium" style={styles.headerSubtitle}>
-            Age {patient.age} • Patient Overview
-          </Text>
-        </View>
-        <IconButton
-          icon="cog"
-          onPress={() => navigation.navigate('PatientSettings', { patient })}
-        />
-      </View>
+      {renderHeader()}
 
       {/* Tab Navigation */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabContainer}>
@@ -453,7 +654,9 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
       <View style={styles.content}>
         {activeTab === 'overview' && renderOverviewTab()}
         {activeTab === 'sleep' && renderSleepTab()}
-        {/* Add other tabs as needed */}
+        {activeTab === 'mood' && renderMoodTab()}
+        {activeTab === 'diet' && renderDietTab()}
+        {activeTab === 'activity' && renderActivityTab()}
       </View>
     </SafeAreaView>
   );
@@ -463,23 +666,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
+  headerSurface: {
+    elevation: 4,
   },
-  headerLeft: {
+  headerGradient: {
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerText: {
+    marginLeft: 16,
     flex: 1,
   },
   headerTitle: {
+    color: '#FFFFFF',
     fontWeight: 'bold',
+    marginBottom: 4,
   },
   headerSubtitle: {
-    opacity: 0.7,
-    marginTop: 2,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  backButton: {
+    margin: 0,
+    marginRight: 8,
   },
   tabContainer: {
     paddingHorizontal: 16,

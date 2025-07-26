@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Patient, PatientState, VitalSigns, SleepData, MoodEntry, DietEntry, PhysicalActivity, BathroomUse, MedicationLog } from '../types';
 import { PatientService } from '../services/patient';
+import { BeaconService, PatientLocation } from '../services/beacon';
 
 interface PatientStore extends PatientState {
   addPatient: (patient: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
@@ -36,8 +37,17 @@ interface PatientStore extends PatientState {
   addMedicationLog: (medicationLog: Omit<MedicationLog, 'id'>) => Promise<void>;
   fetchMedicationLogs: (patientId: string) => Promise<void>;
   
+  // Location tracking methods
+  patientLocations: PatientLocation[];
+  locationLoading: boolean;
+  updatePatientLocations: () => Promise<void>;
+  startLocationTracking: () => void;
+  stopLocationTracking: () => void;
+  
   setLoading: (loading: boolean) => void;
 }
+
+let locationTrackingInterval: NodeJS.Timeout | null = null;
 
 export const usePatientStore = create<PatientStore>((set, get) => ({
   patients: [],
@@ -50,6 +60,8 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
   dietEntries: {},
   physicalActivities: {},
   isLoading: false,
+  patientLocations: [],
+  locationLoading: false,
 
   addPatient: async (patientData) => {
     set({ isLoading: true });
@@ -278,5 +290,49 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
 
   fetchMedicationLogs: async (patientId: string) => {
     // TODO: Implement
-  }
+  },
+
+  // Location tracking methods
+  updatePatientLocations: async () => {
+    const { patients } = get();
+    if (patients.length === 0) return;
+
+    set({ locationLoading: true });
+    try {
+      const locations = await BeaconService.getPatientLocations(patients);
+      set({ patientLocations: locations, locationLoading: false });
+    } catch (error) {
+      console.error('Error updating patient locations:', error);
+      set({ locationLoading: false });
+    }
+  },
+
+  startLocationTracking: () => {
+    const { patients, updatePatientLocations } = get();
+    
+    if (locationTrackingInterval) {
+      clearInterval(locationTrackingInterval);
+    }
+
+    if (patients.length === 0) return;
+
+    // Initial load
+    updatePatientLocations();
+
+    // Set up auto-refresh every 2 seconds
+    locationTrackingInterval = BeaconService.startAutoRefresh(
+      (locations) => {
+        set({ patientLocations: locations });
+      },
+      patients,
+      2000
+    );
+  },
+
+  stopLocationTracking: () => {
+    if (locationTrackingInterval) {
+      BeaconService.stopAutoRefresh(locationTrackingInterval);
+      locationTrackingInterval = null;
+    }
+  },
 }));

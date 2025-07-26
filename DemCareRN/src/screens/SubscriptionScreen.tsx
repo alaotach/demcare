@@ -7,32 +7,27 @@ import {
   useTheme,
   SegmentedButtons,
   List,
-  Divider
+  Divider,
+  Surface,
+  IconButton
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SubscriptionTier, SubscriptionFeature } from '../types';
 
-export default function SubscriptionScreen() {
+export default function SubscriptionScreen({ navigation }: { navigation: any }) {
   const theme = useTheme();
   const [selectedTier, setSelectedTier] = useState<SubscriptionTier>(SubscriptionTier.FREE);
 
   const features: SubscriptionFeature[] = [
-    { name: 'Basic Patient Monitoring', free: true, premium: true, enterprise: true },
+    { name: 'Patient Monitoring', free: true, premium: true, enterprise: true },
     { name: 'Up to 5 Patients', free: true, premium: false, enterprise: false },
     { name: 'Up to 50 Patients', free: false, premium: true, enterprise: false },
     { name: 'Unlimited Patients', free: false, premium: false, enterprise: true },
-    { name: 'Real-time Alerts', free: true, premium: true, enterprise: true },
-    { name: 'Basic Vitals Charts', free: true, premium: true, enterprise: true },
     { name: 'Advanced Analytics', free: false, premium: true, enterprise: true },
-    { name: 'Historical Data (7 days)', free: true, premium: false, enterprise: false },
-    { name: 'Historical Data (90 days)', free: false, premium: true, enterprise: false },
-    { name: 'Historical Data (Unlimited)', free: false, premium: false, enterprise: true },
-    { name: 'Email Support', free: true, premium: true, enterprise: true },
     { name: 'Priority Support', free: false, premium: true, enterprise: true },
-    { name: '24/7 Phone Support', free: false, premium: false, enterprise: true },
     { name: 'API Access', free: false, premium: false, enterprise: true },
-    { name: 'Custom Integrations', free: false, premium: false, enterprise: true },
-    { name: 'Multi-location Support', free: false, premium: false, enterprise: true },
   ];
 
   const tierOptions = [
@@ -62,17 +57,42 @@ export default function SubscriptionScreen() {
     console.log(`Upgrading to ${selectedTier}`);
   };
 
+  const renderHeader = () => (
+    <Surface style={styles.headerSurface} elevation={4}>
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primaryContainer]}
+        style={styles.headerGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <SafeAreaView>
+          <View style={styles.headerContent}>
+            <IconButton
+              icon="arrow-left"
+              iconColor="#FFFFFF"
+              size={20}
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            />
+            <MaterialCommunityIcons name="crown" size={24} color="#FFFFFF" />
+            <View style={styles.headerText}>
+              <Text variant="titleLarge" style={styles.headerTitle}>
+                Choose Your Plan
+              </Text>
+              <Text variant="bodySmall" style={styles.headerSubtitle}>
+                Select the plan that fits your needs
+              </Text>
+            </View>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    </Surface>
+  );
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
       <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text variant="headlineSmall" style={styles.title}>
-            Choose Your Plan
-          </Text>
-          <Text variant="bodyMedium" style={styles.subtitle}>
-            Select the plan that best fits your needs
-          </Text>
-        </View>
 
         <SegmentedButtons
           value={selectedTier}
@@ -84,11 +104,11 @@ export default function SubscriptionScreen() {
         {/* Current Plan Card */}
         <Card style={styles.planCard}>
           <Card.Content style={styles.planContent}>
-            <Text variant="headlineMedium" style={styles.planTitle}>
+            <Text variant="headlineSmall" style={styles.planTitle}>
               {selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1)}
             </Text>
             <View style={styles.priceContainer}>
-              <Text variant="headlineLarge" style={styles.price}>
+              <Text variant="headlineMedium" style={styles.price}>
                 {pricing[selectedTier].price}
               </Text>
               <Text variant="bodyMedium" style={styles.period}>
@@ -108,11 +128,11 @@ export default function SubscriptionScreen() {
           </Card.Content>
         </Card>
 
-        {/* Features Comparison */}
+        {/* Features List */}
         <Card style={styles.featuresCard}>
           <Card.Content>
-            <Text variant="titleLarge" style={styles.featuresTitle}>
-              Plan Features
+            <Text variant="titleMedium" style={styles.featuresTitle}>
+              What's Included
             </Text>
             
             {features.map((feature, index) => (
@@ -128,8 +148,10 @@ export default function SubscriptionScreen() {
                   titleStyle={{
                     color: feature[selectedTier] 
                       ? theme.colors.onSurface 
-                      : theme.colors.outline
+                      : theme.colors.outline,
+                    fontSize: 14,
                   }}
+                  style={styles.listItem}
                 />
                 {index < features.length - 1 && <Divider />}
               </View>
@@ -137,54 +159,9 @@ export default function SubscriptionScreen() {
           </Card.Content>
         </Card>
 
-        {/* Full Comparison Table */}
-        <Card style={styles.comparisonCard}>
-          <Card.Content>
-            <Text variant="titleLarge" style={styles.comparisonTitle}>
-              Full Comparison
-            </Text>
-            
-            <View style={styles.comparisonHeader}>
-              <Text variant="titleMedium" style={styles.featureColumn}>
-                Feature
-              </Text>
-              <Text variant="titleMedium" style={styles.tierColumn}>
-                Free
-              </Text>
-              <Text variant="titleMedium" style={styles.tierColumn}>
-                Premium
-              </Text>
-              <Text variant="titleMedium" style={styles.tierColumn}>
-                Enterprise
-              </Text>
-            </View>
-            <Divider style={styles.headerDivider} />
-            
-            {features.map((feature, index) => (
-              <View key={index}>
-                <View style={styles.comparisonRow}>
-                  <Text variant="bodyMedium" style={styles.featureColumn}>
-                    {feature.name}
-                  </Text>
-                  <Text variant="bodyMedium" style={styles.tierColumn}>
-                    {feature.free ? '✓' : '✗'}
-                  </Text>
-                  <Text variant="bodyMedium" style={styles.tierColumn}>
-                    {feature.premium ? '✓' : '✗'}
-                  </Text>
-                  <Text variant="bodyMedium" style={styles.tierColumn}>
-                    {feature.enterprise ? '✓' : '✗'}
-                  </Text>
-                </View>
-                <Divider />
-              </View>
-            ))}
-          </Card.Content>
-        </Card>
-
         <View style={styles.bottomPadding} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -192,20 +169,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
+  headerSurface: {
+    elevation: 4,
   },
-  header: {
-    padding: 20,
+  headerGradient: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  headerContent: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  title: {
-    fontWeight: 'bold',
-    marginBottom: 8,
+  headerText: {
+    marginLeft: 12,
+    flex: 1,
   },
-  subtitle: {
-    opacity: 0.7,
-    textAlign: 'center',
+  headerTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  headerSubtitle: {
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  backButton: {
+    margin: 0,
+    marginRight: 8,
+  },
+  scrollView: {
+    flex: 1,
   },
   segmentedButtons: {
     margin: 20,
@@ -217,15 +210,15 @@ const styles = StyleSheet.create({
   },
   planContent: {
     alignItems: 'center',
-    padding: 24,
+    padding: 20,
   },
   planTitle: {
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   priceContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   price: {
     fontWeight: 'bold',
@@ -233,10 +226,10 @@ const styles = StyleSheet.create({
   },
   period: {
     opacity: 0.7,
-    marginTop: 4,
+    marginTop: 2,
   },
   upgradeButton: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
   featuresCard: {
     margin: 20,
@@ -245,35 +238,10 @@ const styles = StyleSheet.create({
   },
   featuresTitle: {
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  comparisonCard: {
-    margin: 20,
-    marginTop: 10,
-    elevation: 2,
-  },
-  comparisonTitle: {
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  comparisonHeader: {
-    flexDirection: 'row',
-    paddingVertical: 12,
-  },
-  comparisonRow: {
-    flexDirection: 'row',
-    paddingVertical: 12,
-  },
-  featureColumn: {
-    flex: 2,
-    textAlign: 'left',
-  },
-  tierColumn: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerDivider: {
-    marginBottom: 8,
+  listItem: {
+    paddingVertical: 8,
   },
   bottomPadding: {
     height: 20,

@@ -34,6 +34,8 @@ const iconMap: { [key: string]: string } = {
   'mood-happy': 'emoticon-happy',
   'mood-sad': 'emoticon-sad',
   'medication': 'pill',
+  'pill': 'pill',
+  'lungs': 'lungs',
   'clipboard-list': 'clipboard-list',
   
   // Camera & Media icons
@@ -83,6 +85,8 @@ const iconMap: { [key: string]: string } = {
   'upload': 'upload',
   'circle': 'circle',
   'circle-outline': 'circle-outline',
+  'server': 'server',
+  'clock-fast': 'clock-fast',
   
   // Settings & Configuration icons
   'cog': 'cog',
@@ -122,8 +126,12 @@ const iconMap: { [key: string]: string } = {
   'chart-donut': 'chart-donut',
   'trending-up': 'trending-up',
   'trending-down': 'trending-down',
+  'trending-neutral': 'trending-neutral',
   'analytics': 'chart-line',
   'statistics': 'chart-bar',
+  'monitor-dashboard': 'monitor-dashboard',
+  'google-analytics': 'google-analytics',
+  'lightbulb': 'lightbulb',
   
   // User & Profile icons
   'account': 'account',
