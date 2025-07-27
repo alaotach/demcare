@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Dimensions } from 'react-native';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -60,7 +60,7 @@ export default function LoadingScreen() {
             ]}
           >
             <View style={styles.logoBackground}>
-              <MaterialCommunityIcons 
+              <MaterialDesignIcons 
                 name="medical-bag" 
                 size={64} 
                 color="white" 
@@ -101,7 +101,7 @@ export default function LoadingScreen() {
 
           <View style={styles.loadingContainer}>
             <Animated.View style={{ transform: [{ rotate }] }}>
-              <MaterialCommunityIcons 
+              <MaterialDesignIcons 
                 name="loading" 
                 size={32} 
                 color="rgba(255,255,255,0.9)" 

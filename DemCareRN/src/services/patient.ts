@@ -14,9 +14,16 @@ import {
 import { ref, onValue, off, push, set } from 'firebase/database';
 import { firestore, database } from './firebase';
 import { Patient, VitalSigns, PatientStatus } from '../types';
+import ConfigService from './config';
+import { MockPatientService } from './mockService';
 
 export class PatientService {
   static async addPatient(patientData: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>): Promise<Patient> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockPatientService.addPatient(patientData);
+    }
+
     try {
       const docRef = await addDoc(collection(firestore, 'patients'), {
         ...patientData,
@@ -40,6 +47,11 @@ export class PatientService {
   }
 
   static async updatePatient(id: string, updates: Partial<Patient>): Promise<Patient> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockPatientService.updatePatient(id, updates);
+    }
+
     try {
       const patientRef = doc(firestore, 'patients', id);
       await updateDoc(patientRef, {
@@ -65,6 +77,13 @@ export class PatientService {
   }
 
   static async deletePatient(id: string): Promise<void> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      // For mock mode, we can implement deletion logic if needed
+      // For now, just return success
+      return Promise.resolve();
+    }
+
     try {
       await deleteDoc(doc(firestore, 'patients', id));
     } catch (error) {
@@ -73,6 +92,11 @@ export class PatientService {
   }
 
   static async getPatients(doctorId: string): Promise<Patient[]> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockPatientService.getPatients(doctorId);
+    }
+
     try {
       const q = query(
         collection(firestore, 'patients'),
@@ -100,6 +124,11 @@ export class PatientService {
   }
 
   static async getPatient(id: string): Promise<Patient | null> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockPatientService.getPatient(id);
+    }
+
     try {
       const docSnap = await getDoc(doc(firestore, 'patients', id));
       
@@ -120,6 +149,11 @@ export class PatientService {
   }
 
   static async getVitalsHistory(patientId: string, limitCount: number = 100): Promise<VitalSigns[]> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockPatientService.getVitalsHistory(patientId, limitCount);
+    }
+
     try {
       // This would typically fetch from Firestore or Realtime Database
       // For now, returning empty array - implement based on your data structure

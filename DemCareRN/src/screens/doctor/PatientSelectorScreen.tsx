@@ -16,7 +16,7 @@ import {
   IconButton
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Patient, PatientStatus } from '../../types';
@@ -106,7 +106,7 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           />
-          <MaterialCommunityIcons name="account-multiple" size={32} color="#FFFFFF" />
+          <Icon source="account-multiple" size={32} color="#FFFFFF" />
           <View style={styles.headerText}>
             <Text variant="headlineSmall" style={styles.headerTitle}>
               {title}
@@ -151,8 +151,8 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
             >
               {getStatusText(patient.status)}
             </Chip>
-            <MaterialCommunityIcons 
-              name="chevron-right" 
+            <Icon
+              source="chevron-right" 
               size={24} 
               color={theme.colors.outline}
               style={styles.chevron}
@@ -165,9 +165,9 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        {renderHeader()}
         <View style={styles.loadingContainer}>
-          {renderHeader()}
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text variant="bodyLarge" style={styles.loadingText}>Loading patients...</Text>
         </View>
@@ -176,10 +176,12 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
+      
       {patients.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <MaterialCommunityIcons name="account-off" size={64} color={theme.colors.outline} />
+          <Icon source="account-off" size={64} color={theme.colors.outline} />
           <Text variant="headlineSmall" style={styles.emptyTitle}>
             No Patients Found
           </Text>
@@ -193,7 +195,6 @@ export default function PatientSelectorScreen({ navigation, route }: Props) {
           renderItem={renderPatientCard}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContainer}
-          ListHeaderComponent={renderHeader}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -213,7 +214,6 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

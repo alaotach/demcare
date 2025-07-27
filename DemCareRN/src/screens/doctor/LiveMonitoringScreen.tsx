@@ -20,6 +20,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import IconFallback from '../../components/IconFallback';
+import { mockLiveMonitoring } from '../../services/mockData';
+import { ConfigService } from '../../services/config';
 
 const { width } = Dimensions.get('window');
 
@@ -53,53 +55,82 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'normal' | 'warning' | 'critical'>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Mock live patient data
-  const [livePatients] = useState<LivePatient[]>([
-    {
-      id: '1',
-      name: 'John Smith',
-      status: 'normal',
-      heartRate: 72,
-      oxygenSaturation: 98,
-      respiratoryRate: 16,
-      stepCount: 4820,
-      lastUpdate: new Date(),
-      location: 'Room 101',
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      status: 'warning',
-      heartRate: 95,
-      oxygenSaturation: 94,
-      respiratoryRate: 22,
-      stepCount: 2340,
-      lastUpdate: new Date(Date.now() - 30000),
-      location: 'Room 203',
-    },
-    {
-      id: '3',
-      name: 'Michael Brown',
-      status: 'critical',
-      heartRate: 110,
-      oxygenSaturation: 89,
-      respiratoryRate: 28,
-      stepCount: 890,
-      lastUpdate: new Date(Date.now() - 60000),
-      location: 'ICU Ward',
-    },
-    {
-      id: '4',
-      name: 'Emily Davis',
-      status: 'normal',
-      heartRate: 68,
-      oxygenSaturation: 99,
-      respiratoryRate: 14,
-      stepCount: 6750,
-      lastUpdate: new Date(Date.now() - 15000),
-      location: 'Room 305',
-    },
-  ]);
+  // Helper function to navigate to patient overview with serialized data
+  const navigateToPatientOverview = (patient: any) => {
+    const serializedPatient = {
+      ...patient,
+      lastUpdate: patient.lastUpdate instanceof Date 
+        ? patient.lastUpdate.toISOString() 
+        : patient.lastUpdate
+    };
+    navigation.navigate('PatientOverview', { patient: serializedPatient });
+  };
+
+  // Use comprehensive mock live monitoring data
+  const getLivePatients = (): LivePatient[] => {
+    if (ConfigService.isMockModeEnabled() && mockLiveMonitoring.liveVitals) {
+      return mockLiveMonitoring.liveVitals.map(vital => ({
+        id: vital.patientId,
+        name: vital.patientName,
+        status: vital.status === 'stable' ? 'normal' : vital.status === 'elevated' ? 'warning' : 'critical',
+        heartRate: vital.heartRate,
+        oxygenSaturation: vital.oxygenSaturation,
+        respiratoryRate: vital.respiratoryRate,
+        stepCount: Math.floor(Math.random() * 5000) + 1000, // Random steps for demo
+        lastUpdate: vital.lastUpdate,
+        location: `Room ${Math.floor(Math.random() * 300) + 100}`,
+      }));
+    }
+    
+    return [
+      {
+        id: '1',
+        name: 'John Smith',
+        status: 'normal',
+        heartRate: 72,
+        oxygenSaturation: 98,
+        respiratoryRate: 16,
+        stepCount: 4820,
+        lastUpdate: new Date(),
+        location: 'Room 101',
+      },
+      {
+        id: '2',
+        name: 'Sarah Johnson',
+        status: 'warning',
+        heartRate: 95,
+        oxygenSaturation: 94,
+        respiratoryRate: 22,
+        stepCount: 2340,
+        lastUpdate: new Date(Date.now() - 30000),
+        location: 'Room 203',
+      },
+      {
+        id: '3',
+        name: 'Michael Brown',
+        status: 'critical',
+        heartRate: 110,
+        oxygenSaturation: 89,
+        respiratoryRate: 28,
+        stepCount: 890,
+        lastUpdate: new Date(Date.now() - 60000),
+        location: 'ICU Ward',
+      },
+      {
+        id: '4',
+        name: 'Emily Davis',
+        status: 'normal',
+        heartRate: 68,
+        oxygenSaturation: 99,
+        respiratoryRate: 14,
+        stepCount: 6750,
+        lastUpdate: new Date(Date.now() - 15000),
+        location: 'Room 305',
+      },
+    ];
+  };
+
+  const [livePatients] = useState<LivePatient[]>(getLivePatients());
 
   const filteredPatients = livePatients.filter(patient => 
     selectedFilter === 'all' || patient.status === selectedFilter
@@ -155,7 +186,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
               style={styles.backButton}
               labelStyle={{ fontSize: 16 }}
             >
-              <IconFallback name="arrow-left" size={20} color="#FFFFFF" />
+              <IconFallback source="arrow-left" size={20} color="#FFFFFF" />
             </Button>
             <View style={styles.headerTextContainer}>
               <Text variant="headlineSmall" style={styles.headerTitle}>
@@ -183,7 +214,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
       <View style={styles.statsRow}>
         <Card style={[styles.overviewCard, { backgroundColor: '#E8F5E8' }]} elevation={3}>
           <Card.Content style={styles.overviewContent}>
-            <IconFallback name="check-circle" size={24} color="#4CAF50" />
+            <IconFallback source="check-circle" size={24} color="#4CAF50" />
             <Text variant="headlineSmall" style={[styles.overviewNumber, { color: '#4CAF50' }]}>
               {livePatients.filter(p => p.status === 'normal').length}
             </Text>
@@ -193,7 +224,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
 
         <Card style={[styles.overviewCard, { backgroundColor: '#FFF3E0' }]} elevation={3}>
           <Card.Content style={styles.overviewContent}>
-            <IconFallback name="alert-circle" size={24} color="#FF9800" />
+            <IconFallback source="alert-circle" size={24} color="#FF9800" />
             <Text variant="headlineSmall" style={[styles.overviewNumber, { color: '#FF9800' }]}>
               {livePatients.filter(p => p.status === 'warning').length}
             </Text>
@@ -203,7 +234,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
 
         <Card style={[styles.overviewCard, { backgroundColor: '#FFEBEE' }]} elevation={3}>
           <Card.Content style={styles.overviewContent}>
-            <IconFallback name="alert-octagon" size={24} color="#F44336" />
+            <IconFallback source="alert-octagon" size={24} color="#F44336" />
             <Text variant="headlineSmall" style={[styles.overviewNumber, { color: '#F44336' }]}>
               {livePatients.filter(p => p.status === 'critical').length}
             </Text>
@@ -290,7 +321,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
                 {patient.name}
               </Text>
               <View style={styles.patientMeta}>
-                <IconFallback name="map-marker" size={14} color={theme.colors.outline} />
+                <IconFallback source="map-marker" size={14} color={theme.colors.outline} />
                 <Text variant="bodySmall" style={[styles.locationText, { color: theme.colors.outline }]}>
                   {patient.location}
                 </Text>
@@ -319,7 +350,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
                   elevation={1}
                 >
                   <IconFallback 
-                    name={vital.icon as any} 
+                    source={vital.icon as any} 
                     size={18} 
                     color={vital.status !== 'normal' ? getStatusColor(vital.status) : vital.color} 
                   />
@@ -346,7 +377,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
           <View style={styles.patientActions}>
             <Button
               mode="outlined"
-              onPress={() => navigation.navigate('PatientOverview', { patient: { id: patient.id, fullName: patient.name } })}
+              onPress={() => navigateToPatientOverview({ id: patient.id, fullName: patient.name })}
               style={styles.viewButton}
               textColor={theme.colors.primary}
             >
@@ -365,6 +396,52 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
     );
   };
 
+  const renderRecentAlerts = () => {
+    const alerts = ConfigService.isMockModeEnabled() && mockLiveMonitoring.currentAlerts 
+      ? mockLiveMonitoring.currentAlerts.slice(0, 3) // Show only recent 3 alerts
+      : [];
+
+    if (alerts.length === 0) return null;
+
+    return (
+      <View style={styles.overviewContainer}>
+        <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}>
+          Recent Alerts
+        </Text>
+        {alerts.map((alert: any, index: number) => (
+          <Card key={index} style={[styles.overviewCard, { 
+            backgroundColor: alert.severity === 'critical' ? '#FFEBEE' : 
+                            alert.severity === 'warning' ? '#FFF3E0' : '#E3F2FD',
+            marginBottom: 8
+          }]} elevation={2}>
+            <Card.Content style={styles.overviewContent}>
+              <View style={styles.patientHeader}>
+                <IconFallback 
+                  source={alert.severity === 'critical' ? 'alert-octagon' : 
+                        alert.severity === 'warning' ? 'alert-circle' : 'information'} 
+                  size={20} 
+                  color={alert.severity === 'critical' ? '#F44336' : 
+                         alert.severity === 'warning' ? '#FF9800' : '#2196F3'} 
+                />
+                <Text variant="bodyMedium" style={[styles.patientName, { 
+                  color: alert.severity === 'critical' ? '#F44336' : 
+                         alert.severity === 'warning' ? '#FF9800' : '#2196F3',
+                  flex: 1,
+                  marginLeft: 8
+                }]}>
+                  {alert.message}
+                </Text>
+              </View>
+              <Text variant="bodySmall" style={[styles.patientMeta, { color: theme.colors.onSurfaceVariant }]}>
+                {alert.patientName} • {new Date(alert.timestamp).toLocaleTimeString()}
+              </Text>
+            </Card.Content>
+          </Card>
+        ))}
+      </View>
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView 
@@ -376,6 +453,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
         {renderHeader()}
         {renderOverviewStats()}
         {renderFilters()}
+        {renderRecentAlerts()}
         
         <View style={styles.patientsContainer}>
           <View style={styles.patientsHeader}>
@@ -388,7 +466,7 @@ export default function LiveMonitoringScreen({ navigation }: Props) {
               disabled={isRefreshing}
               textColor={theme.colors.primary}
             >
-              {isRefreshing ? <ActivityIndicator size="small" /> : <IconFallback name="refresh" size={20} />}
+              {isRefreshing ? <ActivityIndicator size="small" /> : <IconFallback source="refresh" size={20} />}
             </Button>
           </View>
           
@@ -415,9 +493,9 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   headerGradient: {
-    paddingVertical: 20,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    paddingTop: 74,
+    paddingTop: 44,
   },
   headerContent: {
     flexDirection: 'row',

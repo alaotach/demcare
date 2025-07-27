@@ -17,7 +17,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { BlurView } from '@react-native-community/blur';
 import { useAuthStore } from '../store/authStore';
 import { useSettingsStore } from '../store/settingsStore';
@@ -136,7 +136,7 @@ export default function SettingsScreen() {
         description={description}
         left={(props) => (
           <View style={styles.iconContainer}>
-            <MaterialCommunityIcons 
+            <MaterialDesignIcons 
               name={icon as any} 
               size={24} 
               color={theme.colors.primary}
@@ -225,7 +225,7 @@ export default function SettingsScreen() {
         {/* App Settings Section */}
         <Surface style={styles.sectionCard} elevation={2}>
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="cog" size={24} color={theme.colors.primary} />
+            <MaterialDesignIcons name="cog" size={24} color={theme.colors.primary} />
             <Text variant="titleLarge" style={styles.sectionTitle}>
               App Settings
             </Text>
@@ -284,7 +284,7 @@ export default function SettingsScreen() {
         {/* Support & Information Section */}
         <Surface style={styles.sectionCard} elevation={2}>
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="help-circle" size={24} color={theme.colors.primary} />
+            <MaterialDesignIcons name="help-circle" size={24} color={theme.colors.primary} />
             <Text variant="titleLarge" style={styles.sectionTitle}>
               Support & Information
             </Text>
@@ -335,7 +335,7 @@ export default function SettingsScreen() {
         {/* Action Buttons Section */}
         <Surface style={styles.sectionCard} elevation={2}>
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="alert-circle" size={24} color={theme.colors.error} />
+            <MaterialDesignIcons name="alert-circle" size={24} color={theme.colors.error} />
             <Text variant="titleLarge" style={[styles.sectionTitle, { color: theme.colors.error }]}>
               Actions
             </Text>
@@ -378,7 +378,7 @@ export default function SettingsScreen() {
             {modalType === 'signOut' && (
               <>
                 <View style={styles.modalHeader}>
-                  <MaterialCommunityIcons name="logout" size={32} color={theme.colors.error} />
+                  <MaterialDesignIcons name="logout" size={32} color={theme.colors.error} />
                   <Text variant="headlineSmall" style={[styles.modalTitle, { color: theme.colors.error }]}>
                     Sign Out
                   </Text>
@@ -404,7 +404,7 @@ export default function SettingsScreen() {
             {modalType === 'reset' && (
               <>
                 <View style={styles.modalHeader}>
-                  <MaterialCommunityIcons name="restore" size={32} color={theme.colors.error} />
+                  <MaterialDesignIcons name="restore" size={32} color={theme.colors.error} />
                   <Text variant="headlineSmall" style={[styles.modalTitle, { color: theme.colors.error }]}>
                     Reset Settings
                   </Text>
@@ -430,22 +430,22 @@ export default function SettingsScreen() {
             {modalType === 'help' && (
               <>
                 <View style={styles.modalHeader}>
-                  <MaterialCommunityIcons name="lifebuoy" size={32} color={theme.colors.primary} />
+                  <MaterialDesignIcons name="lifebuoy" size={32} color={theme.colors.primary} />
                   <Text variant="headlineSmall" style={[styles.modalTitle, { color: theme.colors.primary }]}>
                     Help & Support
                   </Text>
                 </View>
                 <View style={styles.helpContent}>
                   <View style={styles.helpItem}>
-                    <MaterialCommunityIcons name="email" size={20} color={theme.colors.primary} />
+                    <MaterialDesignIcons name="email" size={20} color={theme.colors.primary} />
                     <Text variant="bodyMedium" style={styles.helpText}>support@demcare.com</Text>
                   </View>
                   <View style={styles.helpItem}>
-                    <MaterialCommunityIcons name="phone" size={20} color={theme.colors.primary} />
+                    <MaterialDesignIcons name="phone" size={20} color={theme.colors.primary} />
                     <Text variant="bodyMedium" style={styles.helpText}>+1 (555) 123-4567</Text>
                   </View>
                   <View style={styles.helpItem}>
-                    <MaterialCommunityIcons name="web" size={20} color={theme.colors.primary} />
+                    <MaterialDesignIcons name="web" size={20} color={theme.colors.primary} />
                     <Text variant="bodyMedium" style={styles.helpText}>www.demcare.com/support</Text>
                   </View>
                 </View>

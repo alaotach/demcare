@@ -9,6 +9,7 @@ import {
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuthStore } from './src/store/authStore';
 import { useSettingsStore } from './src/store/settingsStore';
+import ConfigService from './src/services/config';
 import AppNavigator from './src/navigation/AppNavigator';
 import LoadingScreen from './src/screens/LoadingScreen';
 
@@ -64,18 +65,40 @@ const customDarkTheme = {
 };
 
 export default function App() {
-  const { isLoading, initializeAuth } = useAuthStore();
+  const { isLoading, initializeAuth, isAuthenticated, user } = useAuthStore();
   const { theme, loadSettings } = useSettingsStore();
 
   useEffect(() => {
     // Initialize app settings and auth
     const initializeApp = async () => {
-      await loadSettings();
-      initializeAuth();
+      try {
+        console.log('App: Starting initialization...');
+        
+        // Initialize ConfigService first to enable mock mode
+        await ConfigService.initializeMockMode();
+        console.log('App: ConfigService initialized');
+        
+        await loadSettings();
+        console.log('App: Settings loaded');
+        
+        const unsubscribe = initializeAuth();
+        console.log('App: Auth initialized');
+        
+        // Cleanup function
+        return () => {
+          if (unsubscribe) {
+            unsubscribe();
+          }
+        };
+      } catch (error) {
+        console.error('App: Initialization error:', error);
+      }
     };
 
     initializeApp();
   }, []);
+
+  console.log('App: Render state - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'user:', user?.fullName);
 
   const paperTheme = theme === 'dark' ? customDarkTheme : customLightTheme;
 

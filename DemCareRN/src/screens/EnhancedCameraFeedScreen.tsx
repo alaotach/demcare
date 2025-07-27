@@ -23,7 +23,7 @@ import {
   HelperText,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import { WebView } from 'react-native-webview';
 
@@ -163,7 +163,7 @@ export default function EnhancedCameraFeedScreen() {
       >
         <View style={styles.headerContent}>
           <View style={styles.headerLeft}>
-            <MaterialCommunityIcons name="camera" size={28} color="#FFFFFF" />
+            <Icon source="camera" size={28} color="#FFFFFF" />
             <View style={styles.headerText}>
               <Text variant="headlineSmall" style={styles.headerTitle}>
                 Camera Feeds
@@ -274,8 +274,8 @@ export default function EnhancedCameraFeedScreen() {
             />
           ) : (
             <View style={[styles.cameraView, styles.offlineView]}>
-              <MaterialCommunityIcons
-                name={stream.status === 'offline' ? 'camera-off' : 'alert-circle'}
+              <Icon source=
+                source={stream.status === 'offline' ? 'camera-off' : 'alert-circle'}
                 size={48}
                 color={theme.colors.outline}
               />
@@ -359,8 +359,8 @@ export default function EnhancedCameraFeedScreen() {
             />
           ) : (
             <View style={[styles.fullScreenVideo, styles.offlineView]}>
-              <MaterialCommunityIcons
-                name="camera-off"
+              <Icon source=
+                source="camera-off"
                 size={80}
                 color={theme.colors.outline}
               />
@@ -375,7 +375,7 @@ export default function EnhancedCameraFeedScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {renderHeader()}
       {renderCameraGrid()}
 

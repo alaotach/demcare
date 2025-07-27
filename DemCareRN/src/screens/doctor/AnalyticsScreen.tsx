@@ -29,6 +29,8 @@ import IconFallback from '../../components/IconFallback';
 import { usePatientStore } from '../../store/patientStore';
 import { useAuthStore } from '../../store/authStore';
 import { Patient, PatientStatus } from '../../types';
+import { mockAnalytics } from '../../services/mockData';
+import { ConfigService } from '../../services/config';
 
 const { width } = Dimensions.get('window');
 
@@ -100,74 +102,83 @@ export default function AnalyticsScreen({ navigation }: Props) {
   };
 
   const getPatientAnalytics = (patient: Patient): PatientAnalytics[] => {
-    const metrics = generatePatientMetrics(patient);
+    // Use our comprehensive mock analytics data
+    const isMockMode = ConfigService.isMockModeEnabled();
+    const mockData = isMockMode ? mockAnalytics.weeklyStats : null;
+    const fallbackMetrics = !isMockMode ? generatePatientMetrics(patient) : null;
+    
+    const heartRate = mockData?.averageHeartRate || fallbackMetrics?.avgHeartRate || 82;
+    const oxygenSat = mockData?.averageOxygenSaturation || fallbackMetrics?.avgSpO2 || 95;
+    const steps = mockData?.averageSteps || fallbackMetrics?.dailySteps || 2100;
+    const sleepHours = mockData?.averageSleepHours || fallbackMetrics?.sleepHours || 7.2;
+    const incidents = mockData?.incidentCount || fallbackMetrics?.alertsCount || 0;
     
     return [
       {
         id: '1',
         title: 'Heart Rate',
         description: `${selectedPeriod} average for ${patient.fullName}`,
-        value: `${metrics.avgHeartRate} BPM`,
+        value: `${heartRate} BPM`,
         change: '+2.3%',
         trend: 'up',
         icon: 'heart',
         color: '#E91E63',
-        isGood: metrics.avgHeartRate >= 60 && metrics.avgHeartRate <= 100,
+        isGood: heartRate >= 60 && heartRate <= 100,
       },
       {
         id: '2',
         title: 'SpO₂ Level',
         description: 'Oxygen saturation average',
-        value: `${metrics.avgSpO2}%`,
+        value: `${oxygenSat}%`,
         change: '+0.8%',
         trend: 'up',
         icon: 'water-percent',
         color: '#2196F3',
-        isGood: metrics.avgSpO2 >= 95,
+        isGood: oxygenSat >= 95,
       },
       {
         id: '3',
         title: 'Daily Steps',
         description: 'Activity level tracking',
-        value: metrics.dailySteps.toLocaleString(),
+        value: steps.toLocaleString(),
         change: patient.status === PatientStatus.IN_RANGE ? '+12.4%' : '-5.2%',
         trend: patient.status === PatientStatus.IN_RANGE ? 'up' : 'down',
         icon: 'walk',
         color: '#4CAF50',
-        isGood: metrics.dailySteps >= 3000,
+        isGood: steps >= 1000,
       },
       {
         id: '4',
         title: 'Sleep Quality',
         description: 'Average sleep duration',
-        value: `${metrics.sleepHours}h`,
+        value: `${sleepHours}h`,
         change: '+0.5h',
         trend: 'up',
         icon: 'sleep',
         color: '#673AB7',
-        isGood: metrics.sleepHours >= 7,
+        isGood: sleepHours >= 6,
       },
       {
         id: '5',
         title: 'Alert Count',
         description: `Critical alerts this ${selectedPeriod}`,
-        value: metrics.alertsCount.toString(),
-        change: metrics.alertsCount === 0 ? '-100%' : '+25%',
-        trend: metrics.alertsCount === 0 ? 'down' : 'up',
+        value: incidents.toString(),
+        change: incidents === 0 ? '-100%' : '+25%',
+        trend: incidents === 0 ? 'down' : 'up',
         icon: 'alert-circle',
         color: '#FF5722',
-        isGood: metrics.alertsCount === 0,
+        isGood: incidents === 0,
       },
       {
         id: '6',
         title: 'Medication',
         description: 'Compliance rate',
-        value: `${metrics.medicationCompliance}%`,
+        value: `${mockData?.medicationCompliance || fallbackMetrics?.medicationCompliance || 92}%`,
         change: '+5.2%',
         trend: 'up',
         icon: 'pill',
         color: '#607D8B',
-        isGood: metrics.medicationCompliance >= 80,
+        isGood: (mockData?.medicationCompliance || fallbackMetrics?.medicationCompliance || 92) >= 80,
       },
     ];
   };
@@ -247,7 +258,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
               style={styles.backButton}
             >
               <View style={styles.backButtonContainer}>
-                <IconFallback name="arrow-left" size={24} color="#FFFFFF" />
+                <IconFallback source="arrow-left" size={24} color="#FFFFFF" />
               </View>
             </Pressable>
             <View style={styles.headerTextContainer}>
@@ -260,7 +271,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
             </View>
             <View style={styles.headerActionContainer}>
               <View style={styles.headerIconContainer}>
-                <IconFallback name="chart-donut" size={24} color="#FFFFFF" />
+                <IconFallback source="chart-donut" size={24} color="#FFFFFF" />
               </View>
             </View>
           </View>
@@ -320,18 +331,18 @@ export default function AnalyticsScreen({ navigation }: Props) {
                   {selectedPatient.vitals && (
                     <View style={styles.patientVitalsContainer}>
                       <View style={styles.vitalIndicator}>
-                        <IconFallback name="heart" size={16} color="rgba(255,255,255,0.9)" />
+                        <IconFallback source="heart" size={16} color="rgba(255,255,255,0.9)" />
                         <Text style={styles.vitalText}>{selectedPatient.vitals.heartRate}</Text>
                       </View>
                       <View style={styles.vitalIndicator}>
-                        <IconFallback name="water-percent" size={16} color="rgba(255,255,255,0.9)" />
+                        <IconFallback source="water-percent" size={16} color="rgba(255,255,255,0.9)" />
                         <Text style={styles.vitalText}>{selectedPatient.vitals.oxygenSaturation}%</Text>
                       </View>
                     </View>
                   )}
                 </View>
                 <View style={styles.expandIndicator}>
-                  <IconFallback name="chevron-right" size={20} color="rgba(255,255,255,0.8)" />
+                  <IconFallback source="chevron-right" size={20} color="rgba(255,255,255,0.8)" />
                 </View>
               </View>
             </LinearGradient>
@@ -341,7 +352,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
         <View style={styles.noPatientContainer}>
           <View style={styles.noPatientCard}>
             <View style={styles.noPatientIconContainer}>
-              <IconFallback name="account-search" size={48} color="#667eea" />
+              <IconFallback source="account-search" size={48} color="#667eea" />
             </View>
             <Text style={styles.noPatientTitle}>No Patient Selected</Text>
             <Text style={styles.noPatientDescription}>
@@ -359,7 +370,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
                 style={styles.selectPatientBtnGradient}
               >
                 <Text style={styles.selectPatientBtnText}>Select Patient</Text>
-                <IconFallback name="arrow-right" size={20} color="#FFFFFF" />
+                <IconFallback source="arrow-right" size={20} color="#FFFFFF" />
               </LinearGradient>
             </Pressable>
           </View>
@@ -397,7 +408,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
             elevation={4}
           >
             <IconFallback 
-              name={patient.status === PatientStatus.IN_RANGE ? "check" : 
+              source={patient.status === PatientStatus.IN_RANGE ? "check" : 
                     patient.status === PatientStatus.OUT_OF_RANGE ? "alert" : "wifi-off"} 
               size={12} 
               color="#FFFFFF" 
@@ -412,7 +423,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
             </Text>
             {selectedPatient?.id === patient.id && (
               <Surface style={styles.modalSelectedBadge} elevation={2}>
-                <IconFallback name="check" size={16} color="#4CAF50" />
+                <IconFallback source="check" size={16} color="#4CAF50" />
               </Surface>
             )}
           </View>
@@ -438,17 +449,17 @@ export default function AnalyticsScreen({ navigation }: Props) {
           {patient.vitals && (
             <View style={styles.modalPatientVitalsRow}>
               <View style={[styles.modalVitalChip, { backgroundColor: '#E91E63' + '15' }]}>
-                <IconFallback name="heart" size={16} color="#E91E63" />
+                <IconFallback source="heart" size={16} color="#E91E63" />
                 <Text style={[styles.modalVitalChipText, { color: '#E91E63' }]}>{patient.vitals.heartRate}</Text>
                 <Text style={[styles.modalVitalChipUnit, { color: '#E91E63' }]}>BPM</Text>
               </View>
               <View style={[styles.modalVitalChip, { backgroundColor: '#2196F3' + '15' }]}>
-                <IconFallback name="water-percent" size={16} color="#2196F3" />
+                <IconFallback source="water-percent" size={16} color="#2196F3" />
                 <Text style={[styles.modalVitalChipText, { color: '#2196F3' }]}>{patient.vitals.oxygenSaturation}</Text>
                 <Text style={[styles.modalVitalChipUnit, { color: '#2196F3' }]}>%</Text>
               </View>
               <View style={[styles.modalVitalChip, { backgroundColor: '#4CAF50' + '15' }]}>
-                <IconFallback name="walk" size={16} color="#4CAF50" />
+                <IconFallback source="walk" size={16} color="#4CAF50" />
                 <Text style={[styles.modalVitalChipText, { color: '#4CAF50' }]}>{patient.vitals.stepCount}</Text>
                 <Text style={[styles.modalVitalChipUnit, { color: '#4CAF50' }]}>steps</Text>
               </View>
@@ -512,11 +523,11 @@ export default function AnalyticsScreen({ navigation }: Props) {
             style={[styles.cardIcon, { backgroundColor: card.color }]} 
             elevation={2}
           >
-            <IconFallback name={card.icon as any} size={24} color="#FFFFFF" />
+            <IconFallback source={card.icon as any} size={24} color="#FFFFFF" />
           </Surface>
           <View style={styles.trendContainer}>
             <IconFallback 
-              name={getTrendIcon(card.trend) as any} 
+              source={getTrendIcon(card.trend) as any} 
               size={16} 
               color={getTrendColor(card.trend, card.isGood)} 
             />
@@ -650,7 +661,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
       <Card style={styles.insightsCard} elevation={4}>
         <Card.Content style={styles.insightsCardContent}>
           <View style={styles.insightsHeader}>
-            <IconFallback name="lightbulb" size={24} color="#FF9800" />
+            <IconFallback source="lightbulb" size={24} color="#FF9800" />
             <Text variant="titleMedium" style={styles.insightsTitle}>
               Patient Insights
             </Text>
@@ -698,7 +709,7 @@ export default function AnalyticsScreen({ navigation }: Props) {
         ) : (
           <View style={styles.emptyState}>
             <Surface style={styles.emptyIconContainer} elevation={4}>
-              <IconFallback name="account-search" size={48} color={theme.colors.primary} />
+              <IconFallback source="account-search" size={48} color={theme.colors.primary} />
             </Surface>
             <Text variant="headlineSmall" style={[styles.emptyTitle, { color: theme.colors.onBackground }]}>
               No Patient Selected
@@ -785,9 +796,9 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
   },
   headerGradient: {
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    paddingTop: 74,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    paddingTop: 44,
   },
   headerContent: {
     flexDirection: 'row',

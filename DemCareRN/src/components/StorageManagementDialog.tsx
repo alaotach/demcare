@@ -18,7 +18,7 @@ import {
   Surface,
   Chip,
 } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 
 interface StorageCategory {
   id: string;
@@ -182,7 +182,7 @@ export default function StorageManagementDialog({ visible, onClose }: Props) {
     <Card style={styles.overviewCard}>
       <Card.Content>
         <View style={styles.overviewHeader}>
-          <MaterialCommunityIcons name="harddisk" size={32} color={theme.colors.primary} />
+          <Icon source="harddisk" size={32} color={theme.colors.primary} />
           <View style={styles.overviewText}>
             <Text variant="headlineSmall" style={styles.overviewTitle}>
               Storage Usage
@@ -241,8 +241,8 @@ export default function StorageManagementDialog({ visible, onClose }: Props) {
                 style={[styles.categoryIcon, { backgroundColor: category.color + '20' }]} 
                 elevation={1}
               >
-                <MaterialCommunityIcons 
-                  name={category.icon} 
+                <Icon source= 
+                  source={category.icon} 
                   size={24} 
                   color={category.color} 
                 />
@@ -301,7 +301,7 @@ export default function StorageManagementDialog({ visible, onClose }: Props) {
     <Card style={styles.tipsCard}>
       <Card.Content>
         <View style={styles.tipsHeader}>
-          <MaterialCommunityIcons name="lightbulb" size={24} color={theme.colors.secondary} />
+          <Icon source="lightbulb" size={24} color={theme.colors.secondary} />
           <Text variant="titleMedium" style={styles.tipsTitle}>
             Storage Tips
           </Text>

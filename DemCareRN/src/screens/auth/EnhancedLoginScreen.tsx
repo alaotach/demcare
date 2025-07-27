@@ -26,7 +26,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import { useAuthStore } from '../../store/authStore';
 
 const { width, height } = Dimensions.get('window');
@@ -136,17 +136,29 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
     }
   };
 
-  const handleQuickLogin = (role: string) => {
+  const handleQuickLogin = async (role: string) => {
     // Quick login for demo purposes
     const demoCredentials = {
-      doctor: { email: 'doctor@demcare.com', password: 'doctor123' },
-      caregiver: { email: 'caregiver@demcare.com', password: 'caregiver123' },
+      doctor: { email: 'demo.doctor@demcare.com', password: 'demo123' },
+      caregiver: { email: 'demo.caregiver@demcare.com', password: 'demo123' },
     };
 
     const creds = demoCredentials[role as keyof typeof demoCredentials];
     if (creds) {
       setEmail(creds.email);
       setPassword(creds.password);
+      setErrors({});
+      setLoading(true);
+      try {
+        await signIn(creds.email, creds.password);
+      } catch (error) {
+        Alert.alert(
+          'Login Failed',
+          error instanceof Error ? error.message : 'Unable to sign in. Please check your credentials and try again.'
+        );
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -199,7 +211,7 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
                     colors={[theme.colors.primary, theme.colors.primaryContainer]}
                     style={styles.logoGradient}
                   >
-                    <MaterialCommunityIcons name="medical-bag" size={24} color="white" />
+                    <Icon source="medical-bag" size={24} color="white" />
                   </LinearGradient>
                 </Surface>
                 <Text variant="headlineLarge" style={styles.title}>
@@ -251,6 +263,28 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
                 </View>
               </Animated.View>
 
+              {/* Demo Accounts Access Button */}
+              <Animated.View
+                style={[
+                  styles.demoAccountsContainer,
+                  {
+                    opacity: formOpacity,
+                    transform: [{ translateY: formTranslateY }],
+                  },
+                ]}
+              >
+                <Button
+                  mode="contained-tonal"
+                  onPress={() => navigation.navigate('DemoAccounts')}
+                  style={styles.demoAccountsButton}
+                  contentStyle={styles.demoAccountsButtonContent}
+                  labelStyle={styles.demoAccountsButtonLabel}
+                  icon="account-multiple"
+                >
+                  View All Demo Accounts
+                </Button>
+              </Animated.View>
+
               {/* Login Form */}
               <Animated.View
                 style={[
@@ -264,8 +298,8 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
                 <Card style={styles.loginCard}>
                   <Card.Content style={styles.cardContent}>
                     <View style={styles.cardHeader}>
-                      <MaterialCommunityIcons
-                        name="shield-account"
+                      <Icon
+                        source="shield-account"
                         size={28}
                         color={theme.colors.primary}
                       />
@@ -375,11 +409,11 @@ export default function EnhancedLoginScreen({ navigation }: Props) {
                 {/* Footer - Compact */}
                 <View style={styles.footer}>
                   <View style={styles.securityIndicators}>
-                    <MaterialCommunityIcons name="shield-check" size={12} color="rgba(255,255,255,0.95)" />
+                    <Icon source="shield-check" size={12} color="rgba(255,255,255,0.95)" />
                     <Text variant="bodySmall" style={styles.securityText}>
                       Enterprise Security
                     </Text>
-                    <MaterialCommunityIcons name="certificate" size={12} color="rgba(255,255,255,0.95)" />
+                    <Icon source="certificate" size={12} color="rgba(255,255,255,0.95)" />
                     <Text variant="bodySmall" style={styles.securityText}>
                       HIPAA Compliant
                     </Text>
@@ -661,5 +695,26 @@ const styles = StyleSheet.create({
     textShadowRadius: 3,
     marginLeft: width * 0.003,
     marginRight: width * 0.008,
+  },
+  // Demo Accounts Button
+  demoAccountsContainer: {
+    marginBottom: height * 0.015,
+    paddingHorizontal: width * 0.08,
+  },
+  demoAccountsButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  demoAccountsButtonContent: {
+    paddingVertical: height * 0.006,
+  },
+  demoAccountsButtonLabel: {
+    color: 'white',
+    fontSize: Math.min(width * 0.036, 14),
+    fontWeight: '600',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 });

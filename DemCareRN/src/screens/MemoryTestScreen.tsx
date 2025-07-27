@@ -225,7 +225,7 @@ export default function MemoryTestScreen({ navigation, route }: MemoryTestProps)
           <Card.Content>
             <View style={styles.questionHeader}>
               <MaterialIcon 
-                name={
+                source={
                   question.type === 'multiple-choice' ? 'format-list-bulleted' :
                   question.type === 'text-input' ? 'keyboard' :
                   question.type === 'yes-no' ? 'help-circle' : 'brain'
@@ -338,7 +338,7 @@ export default function MemoryTestScreen({ navigation, route }: MemoryTestProps)
         <Card style={styles.resultsCard} mode="outlined">
           <Card.Content>
             <View style={styles.resultsHeader}>
-              <MaterialIcon name="trophy" size={48} color="#FFD700" />
+              <MaterialIcon source="trophy" size={48} color="#FFD700" />
               <Text variant="headlineMedium" style={styles.resultsTitle}>
                 Test Complete!
               </Text>
@@ -433,7 +433,7 @@ export default function MemoryTestScreen({ navigation, route }: MemoryTestProps)
                 {patientName}
               </Text>
             </View>
-            <MaterialIcon name="brain" size={28} color="white" />
+            <MaterialIcon source="brain" size={28} color="white" />
           </View>
         </LinearGradient>
       </Surface>

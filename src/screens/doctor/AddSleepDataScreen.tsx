@@ -10,7 +10,7 @@ import {
   Surface
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, SleepData } from '../../types';
 
@@ -137,22 +137,12 @@ export default function AddSleepDataScreen({ navigation, route }: Props) {
           {/* Header */}
           <Card style={styles.headerCard}>
             <Card.Content>
-              <View style={styles.headerContent}>
-                <IconButton
-                  icon="arrow-left"
-                  size={24}
-                  onPress={() => navigation.goBack()}
-                  style={styles.backButton}
-                />
-                <View style={styles.headerText}>
-                  <Text variant="headlineSmall" style={styles.title}>
-                    📊 Add Sleep Data
-                  </Text>
-                  <Text variant="bodyMedium" style={styles.subtitle}>
-                    Track {patient.fullName}'s sleep patterns
-                  </Text>
-                </View>
-              </View>
+              <Text variant="headlineSmall" style={styles.title}>
+                📊 Add Sleep Data
+              </Text>
+              <Text variant="bodyMedium" style={styles.subtitle}>
+                Track {patient.fullName}'s sleep patterns
+              </Text>
             </Card.Content>
           </Card>
 
@@ -203,7 +193,7 @@ export default function AddSleepDataScreen({ navigation, route }: Props) {
               </View>
 
               <Surface style={styles.summaryContainer}>
-                <MaterialCommunityIcons name="sleep" size={24} color={theme.colors.primary} />
+                <MaterialDesignIcons name="sleep" size={24} color={theme.colors.primary} />
                 <Text variant="titleMedium" style={styles.totalSleepText}>
                   Total Sleep: {calculateTotalSleep().toFixed(1)} hours
                 </Text>
@@ -354,19 +344,6 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     opacity: 0.7,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginLeft: -8,
-  },
-  backButton: {
-    margin: 0,
-    marginTop: -8,
-  },
-  headerText: {
-    flex: 1,
-    marginLeft: -8,
   },
   card: {
     marginBottom: 16,

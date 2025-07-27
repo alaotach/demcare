@@ -11,7 +11,7 @@ import {
   Surface
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, MoodEntry } from '../../types';
@@ -97,7 +97,7 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
   ) => (
     <View style={styles.ratingContainer}>
       <View style={styles.ratingHeader}>
-        <MaterialCommunityIcons name={icon as any} size={20} color={theme.colors.primary} />
+        <Icon source={icon as any} size={20} color={theme.colors.primary} />
         <Text variant="bodyMedium" style={styles.ratingTitle}>{title}</Text>
       </View>
       <View style={styles.scaleContainer}>
@@ -132,7 +132,7 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           />
-          <MaterialCommunityIcons name="emoticon-happy" size={32} color="#FFFFFF" />
+          <Icon source="emoticon-happy" size={32} color="#FFFFFF" />
           <View style={styles.headerText}>
             <Text variant="headlineSmall" style={styles.headerTitle}>
               Mood Check-in
@@ -147,9 +147,9 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
       <ScrollView style={styles.scrollView}>
-        {renderHeader()}
         <View style={styles.content}>
           {/* Mood Selection */}
           <Card style={styles.card}>
@@ -170,8 +170,8 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
                       moodScore: mood.score 
                     }))}
                   >
-                    <MaterialCommunityIcons 
-                      name={mood.icon as any} 
+                    <Icon
+                      source={mood.icon as any} 
                       size={32} 
                       color={moodData.mood === mood.key ? mood.color : theme.colors.onSurface} 
                     />
@@ -288,12 +288,10 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     elevation: 4,
-    marginTop: -50, // Extend header upward to cover status bar area
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74, // Extra top padding to account for extended area (50 + 24)
   },
   headerContent: {
     flexDirection: 'row',

@@ -14,7 +14,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { useAuthStore } from '../../store/authStore';
 import { usePatientStore } from '../../store/patientStore';
 
@@ -164,7 +164,7 @@ export default function AddPatientScreen({ navigation }: Props) {
           {/* Patient Information Section */}
           <Surface style={styles.sectionCard} elevation={3}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="account" size={24} color={theme.colors.primary} />
+              <MaterialDesignIcons name="account" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.sectionTitle}>
                 Patient Information
               </Text>
@@ -240,7 +240,7 @@ export default function AddPatientScreen({ navigation }: Props) {
           {/* Contact Information Section */}
           <Surface style={styles.sectionCard} elevation={3}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="phone" size={24} color={theme.colors.primary} />
+              <MaterialDesignIcons name="phone" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.sectionTitle}>
                 Contact Information
               </Text>
@@ -266,7 +266,7 @@ export default function AddPatientScreen({ navigation }: Props) {
           {/* Device Information Section */}
           <Surface style={styles.sectionCard} elevation={3}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="bluetooth" size={24} color={theme.colors.primary} />
+              <MaterialDesignIcons name="bluetooth" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.sectionTitle}>
                 Device Information
               </Text>

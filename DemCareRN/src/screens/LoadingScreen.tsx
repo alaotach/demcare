@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,7 +25,11 @@ export default function LoadingScreen() {
   const dotsAnim3 = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
 
+  // Minimum loading screen time in ms
+  const MIN_LOADING_TIME = 1500;
+
   useEffect(() => {
+    const start = Date.now();
     // Initial entrance animation
     Animated.parallel([
       Animated.spring(scaleAnim, {
@@ -104,6 +108,18 @@ export default function LoadingScreen() {
         useNativeDriver: true,
       })
     ).start();
+
+    // Enforce minimum loading time for smoother experience
+    return () => {
+      const elapsed = Date.now() - start;
+      if (elapsed < MIN_LOADING_TIME) {
+        const remaining = MIN_LOADING_TIME - elapsed;
+        const now = Date.now();
+        while (Date.now() - now < remaining) {
+          // Busy wait (not ideal, but React Native doesn't support blocking UI thread)
+        }
+      }
+    };
   }, []);
 
   const rotate = rotateAnim.interpolate({
@@ -179,8 +195,8 @@ export default function LoadingScreen() {
                   colors={['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.1)']}
                   style={styles.logoGradient}
                 >
-                  <MaterialCommunityIcons 
-                    name="medical-bag" 
+                  <Icon
+                    source="medical-bag" 
                     size={72} 
                     color="white" 
                   />
@@ -297,8 +313,8 @@ export default function LoadingScreen() {
               { opacity: opacityAnim }
             ]}
           >
-            <MaterialCommunityIcons 
-              name="shield-check" 
+            <Icon
+              source="shield-check" 
               size={16} 
               color="rgba(255,255,255,0.8)" 
             />

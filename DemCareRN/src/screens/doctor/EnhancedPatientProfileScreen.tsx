@@ -26,7 +26,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Patient, PatientStatus, VitalSigns } from '../../types';
@@ -211,44 +211,53 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
       <LinearGradient
         colors={[theme.colors.primary, theme.colors.primaryContainer]}
         style={styles.headerGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
       >
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <IconButton
-              icon="arrow-left"
-              iconColor="#FFFFFF"
-              size={20}
-              onPress={() => navigation.goBack()}
-              style={styles.backButton}
-            />
-            <Avatar.Image
-              size={50}
-              source={{ uri: `https://ui-avatars.com/api/?name=${patient.fullName}&background=random` }}
-              style={styles.avatar}
-            />
-            <View style={styles.patientInfoHeader}>
-              <Text variant="titleLarge" style={styles.patientNameHeader}>
-                {patient.fullName}
-              </Text>
-              <View style={styles.statusRow}>
-                <Chip
-                  style={[styles.statusChipHeader, { backgroundColor: getStatusColor(patient.status) }]}
-                  textStyle={{ color: '#FFFFFF', fontWeight: 'bold' }}
-                  compact
-                >
-                  {getStatusText(patient.status)}
-                </Chip>
-              </View>
-            </View>
-            <View style={styles.quickStatsCompact}>
-              <Text variant="bodySmall" style={styles.quickStatCompact}>{patient.age}y</Text>
-              <Text variant="bodySmall" style={styles.quickStatCompact}>{patient.weight}kg</Text>
-              <Text variant="bodySmall" style={styles.quickStatCompact}>{patient.height}cm</Text>
+        <View style={styles.headerContent}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#FFFFFF"
+            size={24}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          />
+          <Avatar.Image
+            size={80}
+            source={{ uri: `https://ui-avatars.com/api/?source=${patient.fullName}&background=random` }}
+            style={styles.avatar}
+          />
+          <View style={styles.patientInfoHeader}>
+            <Text variant="headlineSmall" style={styles.patientNameHeader}>
+              {patient.fullName}
+            </Text>
+            <View style={styles.statusRow}>
+              <Chip
+                style={[styles.statusChipHeader, { backgroundColor: getStatusColor(patient.status) }]}
+                textStyle={{ color: '#FFFFFF', fontWeight: 'bold' }}
+              >
+                {getStatusText(patient.status)}
+              </Chip>
+              <Badge
+                style={[styles.statusBadge, { backgroundColor: getStatusColor(patient.status) }]}
+                size={12}
+              />
             </View>
           </View>
-        </SafeAreaView>
+        </View>
+        
+        <View style={styles.quickStats}>
+          <View style={styles.quickStatItem}>
+            <Text variant="bodySmall" style={styles.quickStatLabel}>Age</Text>
+            <Text variant="titleMedium" style={styles.quickStatValue}>{patient.age}</Text>
+          </View>
+          <View style={styles.quickStatItem}>
+            <Text variant="bodySmall" style={styles.quickStatLabel}>Weight</Text>
+            <Text variant="titleMedium" style={styles.quickStatValue}>{patient.weight}kg</Text>
+          </View>
+          <View style={styles.quickStatItem}>
+            <Text variant="bodySmall" style={styles.quickStatLabel}>Height</Text>
+            <Text variant="titleMedium" style={styles.quickStatValue}>{patient.height}cm</Text>
+          </View>
+        </View>
       </LinearGradient>
     </Surface>
   );
@@ -269,7 +278,7 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
           <Card key={index} style={[styles.vitalCard, { borderLeftColor: vital.color, borderLeftWidth: 4 }]}>
             <Card.Content style={styles.vitalCardContent}>
               <View style={styles.vitalHeader}>
-                <MaterialCommunityIcons name={vital.icon as any} size={24} color={vital.color} />
+                <Icon source={vital.icon as any} size={24} color={vital.color} />
                 <Badge 
                   style={[
                     styles.vitalStatusBadge, 
@@ -337,8 +346,8 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
       return (
         <Card style={styles.chartCard}>
           <Card.Content style={styles.noDataContainer}>
-            <MaterialCommunityIcons 
-              name="chart-line-variant" 
+            <Icon
+              source="chart-line-variant" 
               size={48} 
               color={theme.colors.outline} 
             />
@@ -391,7 +400,7 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
     <Card style={styles.infoCard}>
       <Card.Content>
         <View style={styles.contactHeader}>
-          <MaterialCommunityIcons name="information" size={24} color={theme.colors.primary} />
+          <Icon source="information" size={24} color={theme.colors.primary} />
           <Text variant="titleMedium" style={styles.contactTitle}>
             Doctor View - Read Only
           </Text>
@@ -408,14 +417,14 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
     <Card style={styles.contactCard}>
       <Card.Content>
         <View style={styles.contactHeader}>
-          <MaterialCommunityIcons name="contacts" size={24} color={theme.colors.primary} />
+          <Icon source="contacts" size={24} color={theme.colors.primary} />
           <Text variant="titleMedium" style={styles.contactTitle}>
             Emergency Contact
           </Text>
         </View>
         <Divider style={styles.contactDivider} />
         <View style={styles.contactItem}>
-          <MaterialCommunityIcons name="phone" size={20} color={theme.colors.outline} />
+          <Icon source="phone" size={20} color={theme.colors.outline} />
           <Text variant="bodyMedium" style={styles.contactText}>
             {patient.caregiverContactNumber}
           </Text>
@@ -427,7 +436,7 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
           />
         </View>
         <View style={styles.contactItem}>
-          <MaterialCommunityIcons name="wifi" size={20} color={theme.colors.outline} />
+          <Icon source="wifi" size={20} color={theme.colors.outline} />
           <Text variant="bodyMedium" style={styles.contactText}>
             Device: {patient.rfidMacAddress}
           </Text>
@@ -443,7 +452,7 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
@@ -465,7 +474,7 @@ export default function EnhancedPatientProfileScreen({ navigation, route }: Prop
         onPress={() => navigation.navigate('PatientOverview', { patient })}
         label="Overview"
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -480,21 +489,21 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   headerGradient: {
-    paddingVertical: 16,
+    paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 8,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 20,
   },
   backButton: {
     marginRight: 8,
   },
   avatar: {
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: 'rgba(255, 255, 255, 0.3)',
-    marginRight: 12,
+    marginRight: 16,
   },
   patientInfoHeader: {
     flex: 1,
@@ -502,7 +511,7 @@ const styles = StyleSheet.create({
   patientNameHeader: {
     color: 'white',
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   statusRow: {
     flexDirection: 'row',
@@ -514,13 +523,23 @@ const styles = StyleSheet.create({
   statusBadge: {
     marginLeft: 4,
   },
-  quickStatsCompact: {
-    alignItems: 'flex-end',
+  quickStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    paddingVertical: 16,
   },
-  quickStatCompact: {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: 12,
-    lineHeight: 16,
+  quickStatItem: {
+    alignItems: 'center',
+  },
+  quickStatLabel: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 4,
+  },
+  quickStatValue: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   vitalsSection: {
     padding: 20,

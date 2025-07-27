@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { useTheme } from 'react-native-paper';
 
 import { useAuthStore } from '../store/authStore';
@@ -79,7 +79,7 @@ function DoctorTabs() {
               iconName = 'circle';
           }
 
-          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
+          return <MaterialDesignIcons name={iconName as any} size={size} color={color} />;
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',

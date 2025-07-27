@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { useAuthStore } from '../../store/authStore';
 import { UserRole } from '../../types';
 
@@ -142,7 +142,7 @@ export default function SignUpScreen({ navigation }: Props) {
       >
         <View style={styles.headerContent}>
           <Surface style={styles.logoContainer} elevation={3}>
-            <MaterialCommunityIcons 
+            <MaterialDesignIcons 
               name="medical-bag" 
               size={32} 
               color={theme.colors.primary} 
@@ -168,7 +168,7 @@ export default function SignUpScreen({ navigation }: Props) {
           {/* Personal Information Section */}
           <Surface style={styles.sectionCard} elevation={3}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="account-circle" size={24} color={theme.colors.primary} />
+              <MaterialDesignIcons name="account-circle" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.sectionTitle}>
                 Personal Information
               </Text>
@@ -229,7 +229,7 @@ export default function SignUpScreen({ navigation }: Props) {
           {/* Contact Information Section */}
           <Surface style={styles.sectionCard} elevation={3}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="contacts" size={24} color={theme.colors.primary} />
+              <MaterialDesignIcons name="contacts" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.sectionTitle}>
                 Contact Information
               </Text>
@@ -271,7 +271,7 @@ export default function SignUpScreen({ navigation }: Props) {
           {/* Role Selection Section */}
           <Surface style={styles.sectionCard} elevation={3}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="account-group" size={24} color={theme.colors.primary} />
+              <MaterialDesignIcons name="account-group" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.sectionTitle}>
                 Role Selection
               </Text>
@@ -322,7 +322,7 @@ export default function SignUpScreen({ navigation }: Props) {
           {/* Security Section */}
           <Surface style={styles.sectionCard} elevation={3}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="shield-account" size={24} color={theme.colors.primary} />
+              <MaterialDesignIcons name="shield-account" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.sectionTitle}>
                 Security
               </Text>

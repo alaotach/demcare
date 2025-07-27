@@ -179,7 +179,26 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
   },
 
   fetchSleepData: async (patientId: string) => {
-    // TODO: Implement with PatientService
+    try {
+      // Import ConfigService to check mock mode
+      const ConfigService = (await import('../services/config')).default;
+      
+      if (ConfigService.isMockModeEnabled()) {
+        // Use mock service
+        const { MockPatientService } = await import('../services/mockService');
+        const sleepData = await MockPatientService.getSleepData(patientId);
+        
+        set(state => ({
+          sleepData: {
+            ...state.sleepData,
+            [patientId]: sleepData
+          }
+        }));
+      }
+      // TODO: Implement real service call for production
+    } catch (error) {
+      console.error('Failed to fetch sleep data:', error);
+    }
   },
 
   // Mood tracking methods
@@ -201,7 +220,23 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
   },
 
   fetchMoodEntries: async (patientId: string) => {
-    // TODO: Implement
+    try {
+      const ConfigService = (await import('../services/config')).default;
+      
+      if (ConfigService.isMockModeEnabled()) {
+        const { MockMoodService } = await import('../services/mockService');
+        const moodData = await MockMoodService.getMoodEntries(patientId);
+        
+        set(state => ({
+          moodEntries: {
+            ...state.moodEntries,
+            [patientId]: moodData
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch mood entries:', error);
+    }
   },
 
   // Diet tracking methods
@@ -223,7 +258,23 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
   },
 
   fetchDietEntries: async (patientId: string) => {
-    // TODO: Implement
+    try {
+      const ConfigService = (await import('../services/config')).default;
+      
+      if (ConfigService.isMockModeEnabled()) {
+        const { MockDietService } = await import('../services/mockService');
+        const dietData = await MockDietService.getDietEntries(patientId);
+        
+        set(state => ({
+          dietEntries: {
+            ...state.dietEntries,
+            [patientId]: dietData
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch diet entries:', error);
+    }
   },
 
   // Physical activity methods
@@ -245,7 +296,23 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
   },
 
   fetchPhysicalActivities: async (patientId: string) => {
-    // TODO: Implement
+    try {
+      const ConfigService = (await import('../services/config')).default;
+      
+      if (ConfigService.isMockModeEnabled()) {
+        const { MockActivityService } = await import('../services/mockService');
+        const activityData = await MockActivityService.getPhysicalActivities(patientId);
+        
+        set(state => ({
+          physicalActivities: {
+            ...state.physicalActivities,
+            [patientId]: activityData
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch physical activities:', error);
+    }
   },
 
   // Bathroom tracking methods
@@ -267,7 +334,30 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
   },
 
   fetchBathroomLogs: async (patientId: string) => {
-    // TODO: Implement
+    set({ isLoading: true });
+    try {
+      // Import ConfigService to check mock mode
+      const { ConfigService } = await import('../services/config');
+      
+      if (ConfigService.isMockModeEnabled()) {
+        // Use mock service
+        const { MockActivityService } = await import('../services/mockService');
+        const logs = await MockActivityService.getBathroomLogs(patientId);
+        set(state => ({
+          bathroomLogs: {
+            ...state.bathroomLogs,
+            [patientId]: logs
+          },
+          isLoading: false
+        }));
+      } else {
+        // Real API implementation
+        set({ isLoading: false });
+      }
+    } catch (error) {
+      console.error('Error fetching bathroom logs:', error);
+      set({ isLoading: false });
+    }
   },
 
   // Medication tracking methods

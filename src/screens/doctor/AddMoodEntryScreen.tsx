@@ -11,7 +11,7 @@ import {
   Surface
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, MoodEntry } from '../../types';
 
@@ -96,7 +96,7 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
   ) => (
     <View style={styles.ratingContainer}>
       <View style={styles.ratingHeader}>
-        <MaterialCommunityIcons name={icon as any} size={20} color={theme.colors.primary} />
+        <MaterialDesignIcons name={icon as any} size={20} color={theme.colors.primary} />
         <Text variant="bodyMedium" style={styles.ratingTitle}>{title}</Text>
       </View>
       <View style={styles.scaleContainer}>
@@ -124,22 +124,12 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
           {/* Header */}
           <Card style={styles.headerCard}>
             <Card.Content>
-              <View style={styles.headerContent}>
-                <IconButton
-                  icon="arrow-left"
-                  size={24}
-                  onPress={() => navigation.goBack()}
-                  style={styles.backButton}
-                />
-                <View style={styles.headerText}>
-                  <Text variant="headlineSmall" style={styles.title}>
-                    😊 Mood Check-in
-                  </Text>
-                  <Text variant="bodyMedium" style={styles.subtitle}>
-                    How is {patient.fullName} feeling today?
-                  </Text>
-                </View>
-              </View>
+              <Text variant="headlineSmall" style={styles.title}>
+                😊 Mood Check-in
+              </Text>
+              <Text variant="bodyMedium" style={styles.subtitle}>
+                How is {patient.fullName} feeling today?
+              </Text>
             </Card.Content>
           </Card>
 
@@ -162,7 +152,7 @@ export default function AddMoodEntryScreen({ navigation, route }: Props) {
                       moodScore: mood.score 
                     }))}
                   >
-                    <MaterialCommunityIcons 
+                    <MaterialDesignIcons 
                       name={mood.icon as any} 
                       size={32} 
                       color={moodData.mood === mood.key ? mood.color : theme.colors.onSurface} 
@@ -296,19 +286,6 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     opacity: 0.7,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginLeft: -8,
-  },
-  backButton: {
-    margin: 0,
-    marginTop: -8,
-  },
-  headerText: {
-    flex: 1,
-    marginLeft: -8,
   },
   card: {
     marginBottom: 16,

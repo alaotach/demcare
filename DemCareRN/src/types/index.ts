@@ -27,6 +27,7 @@ export interface Patient {
   caregiverContactNumber: string;
   rfidMacAddress: string;
   doctorId: string;
+  caregiverId?: string; // Optional: link to caregiver for caregiver dashboard filtering
   roomNumber?: string; // Optional room number
   bedNumber?: string; // Optional bed number
   medicalRecordNumber: string; // Medical record identifier
@@ -141,7 +142,10 @@ export interface PhysicalActivity {
 export enum PatientStatus {
   IN_RANGE = 'in_range',
   OUT_OF_RANGE = 'out_of_range',
-  OFFLINE = 'offline'
+  OFFLINE = 'offline',
+  CRITICAL = 'critical',
+  WARNING = 'warning',
+  STABLE = 'stable'
 }
 
 export interface VitalRange {
@@ -196,10 +200,16 @@ export interface AppSettings {
   dataSync: boolean;
 }
 
+export interface Coordinates {
+  x: number;
+  y: number;
+}
+
 // Navigation parameter types
 export type AuthStackParamList = {
   Login: undefined;
   SignUp: undefined;
+  DemoAccounts: undefined;
 };
 
 export type RootStackParamList = {
@@ -235,5 +245,4 @@ export type RootStackParamList = {
   Reports: undefined;
   LiveMonitoring: undefined;
   Analytics: undefined;
-  CameraFeed: undefined;
 };

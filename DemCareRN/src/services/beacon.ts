@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Coordinates } from '../types';
 
 export interface BeaconStatus {
   [patientName: string]: 'IN_RANGE' | 'OUT_OF_RANGE' | 'UNKNOWN';
@@ -10,6 +11,12 @@ export interface PatientLocation {
   rfidMac: string;
   status: 'IN_RANGE' | 'OUT_OF_RANGE' | 'UNKNOWN';
   lastSeen: string;
+  currentRoom?: string;
+  coordinates?: Coordinates;
+  batteryLevel?: number;
+  signalStrength?: number;
+  zone?: string;
+  lastMovement?: string;
 }
 
 export class BeaconService {

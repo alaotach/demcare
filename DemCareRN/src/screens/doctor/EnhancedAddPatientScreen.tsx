@@ -22,7 +22,7 @@ import {
   Divider,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { usePatientStore } from '../../store/patientStore';
@@ -186,8 +186,8 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
                   },
                 ]}
               >
-                <MaterialCommunityIcons
-                  name={step.icon}
+                <Icon
+                  source={step.icon}
                   size={16}
                   color={index <= currentStep ? theme.colors.primary : '#FFFFFF'}
                 />
@@ -219,7 +219,7 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
     <Card style={styles.stepCard}>
       <Card.Content>
         <View style={styles.stepHeader}>
-          <MaterialCommunityIcons name="account" size={24} color={theme.colors.primary} />
+          <Icon source="account" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.stepTitle}>Personal Information</Text>
         </View>
         
@@ -292,7 +292,7 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
     <Card style={styles.stepCard}>
       <Card.Content>
         <View style={styles.stepHeader}>
-          <MaterialCommunityIcons name="medical-bag" size={24} color={theme.colors.primary} />
+          <Icon source="medical-bag" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.stepTitle}>Medical Information</Text>
         </View>
         
@@ -382,7 +382,7 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
     <Card style={styles.stepCard}>
       <Card.Content>
         <View style={styles.stepHeader}>
-          <MaterialCommunityIcons name="phone-alert" size={24} color={theme.colors.primary} />
+          <Icon source="phone-alert" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.stepTitle}>Emergency Contact</Text>
         </View>
         
@@ -406,7 +406,7 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
         <Divider style={styles.divider} />
         
         <View style={styles.stepHeader}>
-          <MaterialCommunityIcons name="shield-account" size={24} color={theme.colors.primary} />
+          <Icon source="shield-account" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.stepTitle}>Insurance Information</Text>
         </View>
         
@@ -433,7 +433,7 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
     <Card style={styles.stepCard}>
       <Card.Content>
         <View style={styles.stepHeader}>
-          <MaterialCommunityIcons name="home" size={24} color={theme.colors.primary} />
+          <Icon source="home" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.stepTitle}>Address Information</Text>
         </View>
         
@@ -520,8 +520,9 @@ export default function EnhancedAddPatientScreen({ navigation }: Props) {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
+        {renderHeader()}
+        
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          {renderHeader()}
           {renderCurrentStep()}
           <View style={styles.bottomPadding} />
         </ScrollView>

@@ -17,7 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import IconFallback from '../../components/IconFallback';
 
 import { useAuthStore } from '../../store/authStore';
@@ -172,75 +172,75 @@ export default function CaretakerDashboard({ navigation }: Props) {
               Caretaker Dashboard • {new Date().toLocaleDateString()}
             </Text>
           </View>
-          <MaterialCommunityIcons name="account-heart" size={40} color="#FFFFFF" />
+          <Icon source="account-heart" size={40} color="#FFFFFF" />
         </View>
       </LinearGradient>
     </Surface>
   );
 
   const renderStats = () => (
-    <View style={styles.statsContainer}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <Card style={[styles.statCard, { borderLeftColor: '#4CAF50' }]}>
-          <Card.Content style={styles.statContent}>
-            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#4CAF50' }]}>
+    <View style={styles.statsGridContainer}>
+      <View style={styles.statsGridRow}>
+        <Card style={[styles.statCardGrid, { borderLeftColor: '#4CAF50' }]}> 
+          <Card.Content style={styles.statContentGrid}>
+            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#4CAF50' }]}> 
               {dashboardStats.totalPatients}
             </Text>
             <Text variant="bodySmall" style={styles.statLabel}>Total Patients</Text>
           </Card.Content>
         </Card>
-        
-        <Card style={[styles.statCard, { borderLeftColor: '#FF9800' }]}>
-          <Card.Content style={styles.statContent}>
-            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#FF9800' }]}>
+        <Card style={[styles.statCardGrid, { borderLeftColor: '#FF9800' }]}> 
+          <Card.Content style={styles.statContentGrid}>
+            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#FF9800' }]}> 
               {dashboardStats.testsToday}
             </Text>
             <Text variant="bodySmall" style={styles.statLabel}>Tests Today</Text>
           </Card.Content>
         </Card>
-        
-        <Card style={[styles.statCard, { borderLeftColor: '#2196F3' }]}>
-          <Card.Content style={styles.statContent}>
-            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#2196F3' }]}>
+      </View>
+      <View style={styles.statsGridRow}>
+        <Card style={[styles.statCardGrid, { borderLeftColor: '#2196F3' }]}> 
+          <Card.Content style={styles.statContentGrid}>
+            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#2196F3' }]}> 
               {dashboardStats.inRangeCount}
             </Text>
             <Text variant="bodySmall" style={styles.statLabel}>In Range</Text>
           </Card.Content>
         </Card>
-        
-        <Card style={[styles.statCard, { borderLeftColor: '#F44336' }]}>
-          <Card.Content style={styles.statContent}>
-            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#F44336' }]}>
+        <Card style={[styles.statCardGrid, { borderLeftColor: '#F44336' }]}> 
+          <Card.Content style={styles.statContentGrid}>
+            <Text variant="headlineMedium" style={[styles.statNumber, { color: '#F44336' }]}> 
               {dashboardStats.alertsCount}
             </Text>
             <Text variant="bodySmall" style={styles.statLabel}>Alerts</Text>
           </Card.Content>
         </Card>
-      </ScrollView>
+      </View>
     </View>
   );
 
   const renderQuickActions = () => (
     <View style={styles.quickActionsContainer}>
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}>
+      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}> 
         Quick Actions
       </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickActionsScroll}>
-        {quickActions.map((action) => (
-          <TouchableOpacity
-            key={action.id}
-            style={[styles.quickActionCard, { backgroundColor: action.color + '15' }]}
-            onPress={action.onPress}
-          >
-            <View style={[styles.quickActionIcon, { backgroundColor: action.color }]}>
-              <MaterialCommunityIcons name={action.icon as any} size={24} color="#FFFFFF" />
-            </View>
-            <Text variant="bodyMedium" style={styles.quickActionText}>
-              {action.title}
-            </Text>
-          </TouchableOpacity>
+      <View style={styles.quickActionsGrid}>
+        {quickActions.map((action, idx) => (
+          <View key={action.id} style={styles.quickActionGridItem}>
+            <TouchableOpacity
+              style={[styles.quickActionCard, { backgroundColor: action.color + '15' }]}
+              onPress={action.onPress}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: action.color }]}> 
+                <Icon source={action.icon as any} size={24} color="#FFFFFF" />
+              </View>
+              <Text variant="bodyMedium" style={styles.quickActionText}> 
+                {action.title}
+              </Text>
+            </TouchableOpacity>
+          </View>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 
@@ -284,7 +284,7 @@ export default function CaretakerDashboard({ navigation }: Props) {
               patientName: patient.fullName,
             })}
           >
-            <IconFallback name="brain" size={16} color="#FF9800" />
+            <IconFallback source="brain" size={16} color="#FF9800" />
             <Text variant="bodySmall" style={[styles.actionText, { color: '#FF9800' }]}>
               Memory Test
             </Text>
@@ -294,7 +294,7 @@ export default function CaretakerDashboard({ navigation }: Props) {
             style={styles.actionButton}
             onPress={() => navigation.navigate('AddSleepData', { patient })}
           >
-            <IconFallback name="sleep" size={16} color="#2196F3" />
+            <IconFallback source="sleep" size={16} color="#2196F3" />
             <Text variant="bodySmall" style={[styles.actionText, { color: '#2196F3' }]}>
               Sleep Data
             </Text>
@@ -304,7 +304,7 @@ export default function CaretakerDashboard({ navigation }: Props) {
             style={styles.actionButton}
             onPress={() => navigation.navigate('AddMoodEntry', { patient })}
           >
-            <IconFallback name="emoticon-happy" size={16} color="#4CAF50" />
+            <IconFallback source="emoticon-happy" size={16} color="#4CAF50" />
             <Text variant="bodySmall" style={[styles.actionText, { color: '#4CAF50' }]}>
               Mood Entry
             </Text>
@@ -317,7 +317,7 @@ export default function CaretakerDashboard({ navigation }: Props) {
               patientName: patient.fullName,
             })}
           >
-            <IconFallback name="pill" size={16} color="#FF5722" />
+            <IconFallback source="pill" size={16} color="#FF5722" />
             <Text variant="bodySmall" style={[styles.actionText, { color: '#FF5722' }]}>
               Medications
             </Text>
@@ -339,14 +339,15 @@ export default function CaretakerDashboard({ navigation }: Props) {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
+      
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {renderHeader()}
         {renderStats()}
         {renderQuickActions()}
         
@@ -367,7 +368,7 @@ export default function CaretakerDashboard({ navigation }: Props) {
           
           {filteredPatients.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <MaterialCommunityIcons name="account-heart-outline" size={64} color={theme.colors.outline} />
+              <Icon source="account-heart-outline" size={64} color={theme.colors.outline} />
               <Text variant="titleMedium" style={styles.emptyText}>
                 {searchQuery ? 'No patients found' : 'No patients assigned yet'}
               </Text>
@@ -420,7 +421,6 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',
@@ -441,17 +441,25 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  statsContainer: {
-    paddingVertical: 20,
+  // Stats grid styles
+  statsGridContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 8,
   },
-  statCard: {
-    marginLeft: 20,
-    marginRight: 8,
-    minWidth: 120,
+  statsGridRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  statCardGrid: {
+    flex: 1,
+    marginHorizontal: 4,
     borderLeftWidth: 4,
     elevation: 2,
+    minWidth: 0,
   },
-  statContent: {
+  statContentGrid: {
     alignItems: 'center',
     paddingVertical: 16,
   },
@@ -463,17 +471,24 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     textAlign: 'center',
   },
+  // Quick actions grid styles
   quickActionsContainer: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  quickActionsScroll: {
-    paddingTop: 16,
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  quickActionGridItem: {
+    width: '48%',
+    marginBottom: 16,
   },
   quickActionCard: {
     alignItems: 'center',
     padding: 16,
-    marginRight: 16,
     borderRadius: 12,
     minWidth: 100,
   },

@@ -17,6 +17,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import IconFallback from '../../components/IconFallback';
+import { mockReports } from '../../services/mockData';
+import { ConfigService } from '../../services/config';
 
 const { width } = Dimensions.get('window');
 
@@ -38,7 +40,49 @@ export default function ReportsScreen({ navigation }: Props) {
   const theme = useTheme();
   const [selectedType, setSelectedType] = useState<'all' | 'patient' | 'analytics' | 'financial' | 'compliance'>('all');
 
-  const reportCards: ReportCard[] = [
+  // Helper functions to map report types
+  const getReportIcon = (type: string) => {
+    switch (type) {
+      case 'weekly': return 'calendar-week';
+      case 'medication': return 'pill';
+      case 'sleep': return 'sleep';
+      case 'activity': return 'run';
+      case 'mood': return 'emoticon-happy';
+      default: return 'file-chart';
+    }
+  };
+
+  const getReportColor = (type: string) => {
+    switch (type) {
+      case 'weekly': return '#4CAF50';
+      case 'medication': return '#FF9800';
+      case 'sleep': return '#673AB7';
+      case 'activity': return '#2196F3';
+      case 'mood': return '#E91E63';
+      default: return '#607D8B';
+    }
+  };
+
+  const getReportType = (type: string): 'patient' | 'analytics' | 'financial' | 'compliance' => {
+    switch (type) {
+      case 'medication': return 'compliance';
+      case 'sleep':
+      case 'activity':
+      case 'mood': return 'analytics';
+      default: return 'patient';
+    }
+  };
+
+  const reportCards: ReportCard[] = ConfigService.isMockModeEnabled() ? 
+    mockReports.map(report => ({
+      id: report.id,
+      title: report.title,
+      description: report.description,
+      icon: getReportIcon(report.type),
+      color: getReportColor(report.type),
+      type: getReportType(report.type),
+      onPress: () => console.log('Generating report:', report.title)
+    })) : [
     {
       id: '1',
       title: 'Patient Summary Report',
@@ -116,7 +160,7 @@ export default function ReportsScreen({ navigation }: Props) {
               style={styles.backButton}
               labelStyle={{ fontSize: 16 }}
             >
-              <IconFallback name="arrow-left" size={20} color="#FFFFFF" />
+              <IconFallback source="arrow-left" size={20} color="#FFFFFF" />
             </Button>
             <View style={styles.headerTextContainer}>
               <Text variant="headlineSmall" style={styles.headerTitle}>
@@ -127,7 +171,7 @@ export default function ReportsScreen({ navigation }: Props) {
               </Text>
             </View>
             <Surface style={styles.headerIconContainer} elevation={3}>
-              <IconFallback name="chart-line" size={24} color="#FFFFFF" />
+              <IconFallback source="chart-line" size={24} color="#FFFFFF" />
             </Surface>
           </View>
         </SafeAreaView>
@@ -173,7 +217,7 @@ export default function ReportsScreen({ navigation }: Props) {
             style={[styles.reportIcon, { backgroundColor: report.color }]} 
             elevation={2}
           >
-            <IconFallback name={report.icon as any} size={24} color="#FFFFFF" />
+            <IconFallback source={report.icon as any} size={24} color="#FFFFFF" />
           </Surface>
           <View style={styles.reportTextContainer}>
             <Text variant="titleMedium" style={styles.reportTitle}>
@@ -207,44 +251,52 @@ export default function ReportsScreen({ navigation }: Props) {
     </Card>
   );
 
-  const renderQuickStats = () => (
-    <View style={styles.quickStatsContainer}>
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}>
-        Quick Statistics
-      </Text>
-      <View style={styles.statsGrid}>
-        <Card style={[styles.statCard, { backgroundColor: '#E3F2FD' }]} elevation={3}>
-          <Card.Content style={styles.statContent}>
-            <IconFallback name="file-chart" size={24} color="#1976D2" />
-            <Text variant="headlineSmall" style={[styles.statNumber, { color: '#1976D2' }]}>
-              24
-            </Text>
-            <Text variant="bodySmall" style={styles.statLabel}>Reports Generated</Text>
-          </Card.Content>
-        </Card>
+  const renderQuickStats = () => {
+    const isMockMode = ConfigService.isMockModeEnabled();
+    const totalReports = isMockMode ? mockReports.length : 24;
+    const recentReports = isMockMode ? mockReports.filter(r => 
+      new Date().getTime() - r.generatedDate.getTime() < 7 * 24 * 60 * 60 * 1000
+    ).length : 18;
+    
+    return (
+      <View style={styles.quickStatsContainer}>
+        <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}>
+          Quick Statistics
+        </Text>
+        <View style={styles.statsGrid}>
+          <Card style={[styles.statCard, { backgroundColor: '#E3F2FD' }]} elevation={3}>
+            <Card.Content style={styles.statContent}>
+              <IconFallback source="file-chart" size={24} color="#1976D2" />
+              <Text variant="headlineSmall" style={[styles.statNumber, { color: '#1976D2' }]}>
+                {totalReports}
+              </Text>
+              <Text variant="bodySmall" style={styles.statLabel}>Reports Available</Text>
+            </Card.Content>
+          </Card>
 
-        <Card style={[styles.statCard, { backgroundColor: '#E8F5E8' }]} elevation={3}>
-          <Card.Content style={styles.statContent}>
-            <IconFallback name="download" size={24} color="#388E3C" />
-            <Text variant="headlineSmall" style={[styles.statNumber, { color: '#388E3C' }]}>
-              18
-            </Text>
-            <Text variant="bodySmall" style={styles.statLabel}>Downloads</Text>
-          </Card.Content>
-        </Card>
+          <Card style={[styles.statCard, { backgroundColor: '#E8F5E8' }]} elevation={3}>
+            <Card.Content style={styles.statContent}>
+              <IconFallback source="download" size={24} color="#388E3C" />
+              <Text variant="headlineSmall" style={[styles.statNumber, { color: '#388E3C' }]}>
+                {recentReports}
+              </Text>
+              <Text variant="bodySmall" style={styles.statLabel}>Recent Reports</Text>
+            </Card.Content>
+          </Card>
 
-        <Card style={[styles.statCard, { backgroundColor: '#FFF3E0' }]} elevation={3}>
-          <Card.Content style={styles.statContent}>
-            <IconFallback name="clock-outline" size={24} color="#F57C00" />
-            <Text variant="headlineSmall" style={[styles.statNumber, { color: '#F57C00' }]}>
-              3
-            </Text>
-            <Text variant="bodySmall" style={styles.statLabel}>Scheduled</Text>
-          </Card.Content>
-        </Card>
+          <Card style={[styles.statCard, { backgroundColor: '#FFF3E0' }]} elevation={3}>
+            <Card.Content style={styles.statContent}>
+              <IconFallback source="clock-outline" size={24} color="#F57C00" />
+              <Text variant="headlineSmall" style={[styles.statNumber, { color: '#F57C00' }]}>
+                {isMockMode ? 2 : 3}
+              </Text>
+              <Text variant="bodySmall" style={styles.statLabel}>Auto-Generated</Text>
+            </Card.Content>
+          </Card>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -275,9 +327,9 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   headerGradient: {
-    paddingVertical: 20,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    paddingTop: 74,
+    paddingTop: 44,
   },
   headerContent: {
     flexDirection: 'row',

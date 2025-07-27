@@ -249,14 +249,14 @@ export default function MedicationManagementScreen({ navigation, route }: Medica
 
         <View style={styles.medicationDetails}>
           <View style={styles.detailRow}>
-            <MaterialIcon name="doctor" size={16} color={theme.colors.primary} />
+            <MaterialIcon source="doctor" size={16} color={theme.colors.primary} />
             <Text variant="bodySmall" style={styles.detailText}>
               Prescribed by: {medication.prescribedBy}
             </Text>
           </View>
           
           <View style={styles.detailRow}>
-            <MaterialIcon name="calendar" size={16} color={theme.colors.primary} />
+            <MaterialIcon source="calendar" size={16} color={theme.colors.primary} />
             <Text variant="bodySmall" style={styles.detailText}>
               Started: {medication.startDate.toLocaleDateString()}
             </Text>
@@ -264,7 +264,7 @@ export default function MedicationManagementScreen({ navigation, route }: Medica
 
           {medication.instructions && (
             <View style={styles.detailRow}>
-              <MaterialIcon name="information" size={16} color={theme.colors.primary} />
+              <MaterialIcon source="information" size={16} color={theme.colors.primary} />
               <Text variant="bodySmall" style={styles.detailText}>
                 {medication.instructions}
               </Text>

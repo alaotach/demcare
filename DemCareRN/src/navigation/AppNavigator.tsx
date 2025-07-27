@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 
 import { useAuthStore } from '../store/authStore';
@@ -10,6 +10,7 @@ import { UserRole, RootStackParamList, AuthStackParamList } from '../types';
 // Auth Screens
 import LoginScreen from '../screens/auth/EnhancedLoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
+import DemoAccountsScreen from '../screens/DemoAccountsScreen';
 
 // Doctor Screens
 import DoctorDashboard from '../screens/doctor/EnhancedDoctorDashboard';
@@ -31,9 +32,8 @@ import MedicationManagementScreen from '../screens/MedicationManagementScreen';
 
 // Common Screens
 import SubscriptionScreen from '../screens/SubscriptionScreen';
-import SettingsScreen from '../screens/UltraEnhancedSettingsScreen';
+import SettingsScreen from '../screens/EnhancedSettingsScreen';
 import LiveFeedScreen from '../screens/LiveFeedScreen';
-import CameraFeedScreen from '../screens/CameraFeedScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const AuthStack = createStackNavigator<AuthStackParamList>();
@@ -57,6 +57,21 @@ function AuthStackScreen() {
         component={SignUpScreen}
         options={{ headerShown: false }}
       />
+      <AuthStack.Screen 
+        name="DemoAccounts" 
+        component={DemoAccountsScreen}
+        options={{ 
+          headerShown: true,
+          title: 'Demo Accounts',
+          headerStyle: {
+            backgroundColor: '#2196F3',
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
     </AuthStack.Navigator>
   );
 }
@@ -73,19 +88,19 @@ function CaretakerTabs() {
 
           switch (route.name) {
             case 'Dashboard':
-              iconName = focused ? 'account-heart' : 'account-heart-outline';
+              iconName = 'heart';
               break;
             case 'Camera':
-              iconName = focused ? 'camera' : 'camera-outline';
+              iconName = 'camera';
               break;
             case 'Settings':
-              iconName = focused ? 'cog' : 'cog-outline';
+              iconName = 'cog';
               break;
             default:
               iconName = 'circle';
           }
 
-          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
+          return <Icon source={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',
@@ -115,22 +130,22 @@ function DoctorTabs() {
 
           switch (route.name) {
             case 'Dashboard':
-              iconName = focused ? 'view-dashboard' : 'view-dashboard-outline';
+              iconName = 'grid';
               break;
             case 'Camera':
-              iconName = focused ? 'camera' : 'camera-outline';
+              iconName = 'camera';
               break;
             case 'Subscription':
-              iconName = focused ? 'crown' : 'crown-outline';
+              iconName = 'star';
               break;
             case 'Settings':
-              iconName = focused ? 'cog' : 'cog-outline';
+              iconName = 'cog';
               break;
             default:
               iconName = 'circle';
           }
 
-          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
+          return <Icon source={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',
@@ -219,11 +234,6 @@ function DoctorAppStack() {
       <Stack.Screen 
         name="Analytics" 
         component={AnalyticsScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen 
-        name="CameraFeed" 
-        component={CameraFeedScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

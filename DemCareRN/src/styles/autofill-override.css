@@ -1,0 +1,54 @@
+/* Autofill background override for web environments */
+/* This CSS removes the yellow autofill background and replaces it with our design background */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 50px #FAFBFC inset !important;
+    -webkit-text-fill-color: #333333 !important;
+    background-color: #FAFBFC !important;
+    color: #333333 !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* For focused state */
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 50px #FAFBFC inset !important;
+    -webkit-text-fill-color: #333333 !important;
+    background-color: #FAFBFC !important;
+    color: #333333 !important;
+}
+
+/* Additional support for other browsers */
+input:-moz-autofill {
+    background-color: #FAFBFC !important;
+    color: #333333 !important;
+}
+
+/* Override any autofill styling for text areas as well */
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 50px #FAFBFC inset !important;
+    -webkit-text-fill-color: #333333 !important;
+    background-color: #FAFBFC !important;
+    color: #333333 !important;
+}
+
+/* For React Native Paper inputs specifically */
+.MuiInputBase-input:-webkit-autofill,
+.MuiOutlinedInput-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 50px #FAFBFC inset !important;
+    -webkit-text-fill-color: #333333 !important;
+    background-color: #FAFBFC !important;
+    color: #333333 !important;
+}
+
+/* General class for any input we want to override */
+.autofill-override:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 50px #FAFBFC inset !important;
+    -webkit-text-fill-color: #333333 !important;
+    background-color: #FAFBFC !important;
+    color: #333333 !important;
+}

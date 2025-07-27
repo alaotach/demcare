@@ -14,7 +14,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart, BarChart, PieChart } from 'react-native-chart-kit';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import { usePatientStore } from '../../store/patientStore';
 import { useAuthStore } from '../../store/authStore';
@@ -40,7 +40,12 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
     moodEntries, 
     dietEntries, 
     physicalActivities,
-    bathroomLogs 
+    bathroomLogs,
+    fetchSleepData,
+    fetchMoodEntries,
+    fetchDietEntries,
+    fetchPhysicalActivities,
+    fetchBathroomLogs
   } = usePatientStore();
   
   const [selectedView, setSelectedView] = useState<'today' | 'week' | 'month'>('today');
@@ -51,6 +56,21 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     selectPatient(patient);
+    
+    // Fetch all patient data
+    const fetchPatientData = async () => {
+      try {
+        await fetchSleepData(patient.id);
+        await fetchMoodEntries(patient.id);
+        await fetchDietEntries(patient.id);
+        await fetchPhysicalActivities(patient.id);
+        await fetchBathroomLogs(patient.id);
+      } catch (error) {
+        console.error('Failed to fetch patient data:', error);
+      }
+    };
+
+    fetchPatientData();
   }, [patient.id]);
 
   const patientSleepData = sleepData[patient.id] || [];
@@ -75,38 +95,104 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
     }
   };
 
-  // Get weekly sleep chart data
+  // Get weekly sleep chart data with proper 7-day range
   const getSleepChartData = () => {
-    const last7Days = patientSleepData.slice(0, 7).reverse();
+    // Create array of last 7 days (today backwards to 6 days ago)
+    const today = new Date();
+    const last7Days = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      last7Days.push(date);
+    }
+    
+    // Map existing sleep data to the 7-day range
+    const chartData = last7Days.map(date => {
+      const dateStr = date.toDateString();
+      const sleepEntry = patientSleepData.find(sleep => 
+        new Date(sleep.date).toDateString() === dateStr
+      );
+      return {
+        date: dateStr,
+        totalSleepHours: sleepEntry ? sleepEntry.totalSleepHours : 0,
+        dayLabel: date.toLocaleDateString('en', { weekday: 'short' })
+      };
+    });
+    
     return {
-      labels: last7Days.map(day => new Date(day.date).toLocaleDateString('en', { weekday: 'short' })),
+      labels: chartData.map(day => day.dayLabel),
       datasets: [{
-        data: last7Days.map(day => day.totalSleepHours),
+        data: chartData.map(day => day.totalSleepHours),
         strokeWidth: 2
       }]
     };
   };
 
-  // Get mood chart data
+  // Get mood chart data with proper 7-day range
   const getMoodChartData = () => {
-    const last7Days = patientMoodData.slice(0, 7).reverse();
+    // Create array of last 7 days (today backwards to 6 days ago)
+    const today = new Date();
+    const last7Days = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      last7Days.push(date);
+    }
+    
+    // Map existing mood data to the 7-day range
+    const chartData = last7Days.map(date => {
+      const dateStr = date.toDateString();
+      const moodEntry = patientMoodData.find(mood => 
+        new Date(mood.timestamp).toDateString() === dateStr
+      );
+      return {
+        date: dateStr,
+        moodScore: moodEntry ? moodEntry.moodScore : 3, // Default to neutral (3) if no data
+        dayLabel: date.toLocaleDateString('en', { weekday: 'short' })
+      };
+    });
+    
     return {
-      labels: last7Days.map(entry => new Date(entry.timestamp).toLocaleDateString('en', { weekday: 'short' })),
+      labels: chartData.map(day => day.dayLabel),
       datasets: [{
-        data: last7Days.map(entry => entry.moodScore),
+        data: chartData.map(day => day.moodScore),
         strokeWidth: 2,
         color: (opacity = 1) => `rgba(255, 193, 7, ${opacity})`
       }]
     };
   };
 
-  // Get activity chart data
+  // Get activity chart data with proper 7-day range
   const getActivityChartData = () => {
-    const last7Days = patientActivityData.slice(0, 7).reverse();
+    // Create array of last 7 days (today backwards to 6 days ago)
+    const today = new Date();
+    const last7Days = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      last7Days.push(date);
+    }
+    
+    // Map existing activity data to the 7-day range
+    const chartData = last7Days.map(date => {
+      const dateStr = date.toDateString();
+      const activityEntry = patientActivityData.find(activity => 
+        new Date(activity.date).toDateString() === dateStr
+      );
+      return {
+        date: dateStr,
+        duration: activityEntry ? activityEntry.duration : 0,
+        dayLabel: date.toLocaleDateString('en', { weekday: 'short' })
+      };
+    });
+    
     return {
-      labels: last7Days.map(activity => new Date(activity.date).toLocaleDateString('en', { weekday: 'short' })),
+      labels: chartData.map(day => day.dayLabel),
       datasets: [{
-        data: last7Days.map(activity => activity.duration),
+        data: chartData.map(day => day.duration),
         strokeWidth: 2,
         color: (opacity = 1) => `rgba(76, 175, 80, ${opacity})`
       }]
@@ -140,7 +226,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
       <View style={styles.summaryGrid}>
         <Card style={[styles.summaryCard, { backgroundColor: '#E3F2FD' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="sleep" size={32} color="#1976D2" />
+            <Icon source="sleep" size={32} color="#1976D2" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Sleep</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#1976D2' }]}>
               {todaySummary.sleep ? `${todaySummary.sleep.totalSleepHours}h` : 'No data'}
@@ -148,9 +234,9 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
             {todaySummary.sleep && (
               <View style={styles.starsContainer}>
                 {[1, 2, 3, 4, 5].map(star => (
-                  <MaterialCommunityIcons 
+                  <Icon
                     key={star}
-                    name={star <= todaySummary.sleep!.sleepQuality ? "star" : "star-outline"}
+                    source={star <= todaySummary.sleep!.sleepQuality ? "star" : "star-outline"}
                     size={12}
                     color="#FFD700"
                   />
@@ -162,7 +248,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#FFF3E0' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="emoticon-happy" size={32} color="#F57C00" />
+            <Icon source="emoticon-happy" size={32} color="#F57C00" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Mood</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#F57C00' }]}>
               {todaySummary.avgMood > 0 ? todaySummary.avgMood.toFixed(1) : 'No data'}
@@ -170,9 +256,9 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
             {todaySummary.avgMood > 0 && (
               <View style={styles.starsContainer}>
                 {[1, 2, 3, 4, 5].map(star => (
-                  <MaterialCommunityIcons 
+                  <Icon
                     key={star}
-                    name={star <= Math.round(todaySummary.avgMood) ? "star" : "star-outline"}
+                    source={star <= Math.round(todaySummary.avgMood) ? "star" : "star-outline"}
                     size={12}
                     color="#FFD700"
                   />
@@ -184,7 +270,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#E8F5E8' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="food-apple" size={32} color="#388E3C" />
+            <Icon source="food-apple" size={32} color="#388E3C" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Meals</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#388E3C' }]}>
               {todaySummary.totalMeals}
@@ -197,7 +283,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#F3E5F5' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="walk" size={32} color="#7B1FA2" />
+            <Icon source="walk" size={32} color="#7B1FA2" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Activity</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#7B1FA2' }]}>
               {todaySummary.totalActivity}min
@@ -210,7 +296,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#FFF8E1' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="toilet" size={32} color="#F9A825" />
+            <Icon source="toilet" size={32} color="#F9A825" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Bathroom</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#F9A825' }]}>
               {todaySummary.bathroomVisits}
@@ -223,7 +309,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#FFEBEE' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="heart-pulse" size={32} color="#D32F2F" />
+            <Icon source="heart-pulse" size={32} color="#D32F2F" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Vitals</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#D32F2F' }]}>
               {patient.vitals?.heartRate || '--'}
@@ -340,9 +426,9 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
                 <Text variant="bodyMedium">Quality:</Text>
                 <View style={styles.starsContainer}>
                   {[1, 2, 3, 4, 5].map(star => (
-                    <MaterialCommunityIcons 
+                    <Icon
                       key={star}
-                      name={star <= todaySummary.sleep!.sleepQuality ? "star" : "star-outline"}
+                      source={star <= todaySummary.sleep!.sleepQuality ? "star" : "star-outline"}
                       size={16}
                       color="#FFD700"
                     />
@@ -387,9 +473,9 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
                 </Text>
                 <View style={styles.starsContainer}>
                   {[1, 2, 3, 4, 5].map(star => (
-                    <MaterialCommunityIcons 
+                    <Icon
                       key={star}
-                      name={star <= sleep.sleepQuality ? "star" : "star-outline"}
+                      source={star <= sleep.sleepQuality ? "star" : "star-outline"}
                       size={14}
                       color="#FFD700"
                     />
@@ -610,7 +696,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           />
-          <MaterialCommunityIcons name="account-details" size={32} color="#FFFFFF" />
+          <Icon source="account-details" size={32} color="#FFFFFF" />
           <View style={styles.headerText}>
             <Text variant="titleLarge" style={styles.headerTitle}>
               {patient.fullName}
@@ -625,12 +711,11 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {renderHeader()}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
 
-        {/* Tab Navigation */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabContainer}>
+      {/* Tab Navigation */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabContainer}>
         {[
           { key: 'overview', label: 'Overview', icon: 'view-dashboard' },
           { key: 'sleep', label: 'Sleep', icon: 'sleep' },
@@ -659,7 +744,6 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
         {activeTab === 'diet' && renderDietTab()}
         {activeTab === 'activity' && renderActivityTab()}
       </View>
-      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -670,12 +754,10 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     elevation: 4,
-    marginTop: -50,
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

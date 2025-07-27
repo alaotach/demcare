@@ -9,7 +9,7 @@ interface AuthStore extends AuthState {
   resetPassword: (email: string) => Promise<void>;
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
-  initializeAuth: () => void;
+  initializeAuth: () => (() => void) | undefined;
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
@@ -20,9 +20,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   signIn: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
+      console.log('AuthStore: Attempting to sign in with:', email);
       const user = await AuthService.signIn({ email, password });
+      console.log('AuthStore: Sign in successful, user:', user);
       set({ user, isAuthenticated: true, isLoading: false });
     } catch (error) {
+      console.error('AuthStore: Sign in failed:', error);
       set({ isLoading: false });
       throw error;
     }
@@ -67,9 +70,21 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   initializeAuth: () => {
+    console.log('AuthStore: initializeAuth called');
     set({ isLoading: true });
-    AuthService.onAuthStateChanged((user) => {
-      set({ user, isAuthenticated: !!user, isLoading: false });
-    });
+    try {
+      const unsubscribe = AuthService.onAuthStateChanged((user) => {
+        console.log('AuthStore: Auth state changed, user:', user?.fullName || 'null');
+        set({ user, isAuthenticated: !!user, isLoading: false });
+      });
+      
+      console.log('AuthStore: onAuthStateChanged listener set up');
+      
+      // Return the unsubscribe function for cleanup
+      return unsubscribe;
+    } catch (error) {
+      console.error('AuthStore: Error initializing auth:', error);
+      set({ isLoading: false });
+    }
   }
 }));

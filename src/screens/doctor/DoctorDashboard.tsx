@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { useAuthStore } from '../../store/authStore';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, PatientStatus } from '../../types';
@@ -212,7 +212,7 @@ export default function DoctorDashboard({ navigation }: Props) {
                 {patient.fullName}
               </Text>
               <Chip 
-                icon={() => <MaterialCommunityIcons name={getStatusIcon(patient.status)} size={16} color="white" />}
+                icon={() => <MaterialDesignIcons name={getStatusIcon(patient.status)} size={16} color="white" />}
                 style={[styles.statusChip, { backgroundColor: getStatusColor(patient.status) }]}
                 textStyle={{ color: 'white' }}
               >
@@ -229,22 +229,22 @@ export default function DoctorDashboard({ navigation }: Props) {
           <View style={styles.vitalsContainer}>
             <View style={styles.vitalsGrid}>
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="heart-pulse" size={20} color="#e74c3c" />
+                <MaterialDesignIcons name="heart-pulse" size={20} color="#e74c3c" />
                 <Text style={styles.vitalLabel}>Heart Rate</Text>
                 <Text style={styles.vitalValue}>{patient.vitals.heartRate}</Text>
               </View>
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="water-percent" size={20} color="#3498db" />
+                <MaterialDesignIcons name="water-percent" size={20} color="#3498db" />
                 <Text style={styles.vitalLabel}>SpO₂</Text>
                 <Text style={styles.vitalValue}>{patient.vitals.oxygenSaturation}%</Text>
               </View>
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="lungs" size={20} color="#2ecc71" />
+                <MaterialDesignIcons name="lungs" size={20} color="#2ecc71" />
                 <Text style={styles.vitalLabel}>Resp. Rate</Text>
                 <Text style={styles.vitalValue}>{patient.vitals.respiratoryRate}</Text>
               </View>
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="walk" size={20} color="#f39c12" />
+                <MaterialDesignIcons name="walk" size={20} color="#f39c12" />
                 <Text style={styles.vitalLabel}>Steps</Text>
                 <Text style={styles.vitalValue}>{patient.vitals.stepCount || 0}</Text>
               </View>
@@ -364,7 +364,7 @@ export default function DoctorDashboard({ navigation }: Props) {
         <View style={styles.patientsContainer}>
           {filteredPatients.length === 0 ? (
             <Surface style={styles.emptyContainer} elevation={1}>
-              <MaterialCommunityIcons 
+              <MaterialDesignIcons 
                 name="account-search" 
                 size={64} 
                 color={theme.colors.outline} 

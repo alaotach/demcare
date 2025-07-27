@@ -12,7 +12,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { useAuthStore } from '../../store/authStore';
 
 const { width, height } = Dimensions.get('window');
@@ -87,7 +87,7 @@ export default function LoginScreen({ navigation }: Props) {
             {/* Enhanced Header */}
             <View style={styles.header}>
               <Surface style={styles.logoContainer} elevation={3}>
-                <MaterialCommunityIcons 
+                <MaterialDesignIcons 
                   name="medical-bag" 
                   size={48} 
                   color={theme.colors.primary} 
@@ -108,7 +108,7 @@ export default function LoginScreen({ navigation }: Props) {
             <Surface style={styles.loginCard} elevation={5}>
               <View style={styles.cardContent}>
                 <View style={styles.cardHeader}>
-                  <MaterialCommunityIcons 
+                  <MaterialDesignIcons 
                     name="login" 
                     size={24} 
                     color={theme.colors.primary} 

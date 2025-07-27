@@ -278,7 +278,7 @@ export default function CameraFeedScreen() {
             <Animated.View style={[styles.headerContent, { opacity: fadeAnim }]}>
               <View style={styles.headerLeft}>
                 <View style={styles.titleContainer}>
-                  <MaterialIcon name="video" size={24} color="white" />
+                  <MaterialIcon source="video" size={24} color="white" />
                   <Text variant="titleLarge" style={styles.headerTitle}>
                     Live Camera Feed
                   </Text>
@@ -378,7 +378,7 @@ export default function CameraFeedScreen() {
         {/* Enhanced Footer */}
         <Surface style={styles.footer} elevation={3}>
           <Animated.View style={[styles.footerContent, { opacity: fadeAnim }]}>
-            <MaterialIcon name="wifi" size={20} color={theme.colors.primary} />
+            <MaterialIcon source="wifi" size={20} color={theme.colors.primary} />
             <Text variant="bodyMedium" style={styles.connectionText}>
               Connected to {ipAddress.split(':')[0]}
             </Text>
@@ -410,7 +410,7 @@ export default function CameraFeedScreen() {
         >
           <View style={styles.headerContent}>
             <Surface style={styles.logoContainer} elevation={2}>
-              <MaterialIcon name="camera" size={28} color={theme.colors.primary} />
+              <MaterialIcon source="camera" size={28} color={theme.colors.primary} />
             </Surface>
             <Text variant="headlineSmall" style={styles.headerTitle}>
               Camera Setup
@@ -436,7 +436,7 @@ export default function CameraFeedScreen() {
         {/* Connection Section */}
         <Surface style={styles.sectionCard} elevation={3}>
           <View style={styles.sectionHeader}>
-            <MaterialIcon name="video-outline" size={24} color={theme.colors.primary} />
+            <MaterialIcon source="video-outline" size={24} color={theme.colors.primary} />
             <Text variant="titleLarge" style={styles.sectionTitle}>
               Camera Connection
             </Text>
@@ -473,7 +473,7 @@ export default function CameraFeedScreen() {
           {showPresets && (
             <Surface style={styles.presetsCard} elevation={2}>
               <View style={styles.presetsHeader}>
-                <MaterialIcon name="bookmark-multiple" size={20} color={theme.colors.primary} />
+                <MaterialIcon source="bookmark-multiple" size={20} color={theme.colors.primary} />
                 <Text variant="titleSmall" style={styles.presetsTitle}>
                   Common Camera Configurations
                 </Text>
@@ -529,7 +529,7 @@ export default function CameraFeedScreen() {
           {cameraStatus && (
             <Surface style={styles.statusCard} elevation={2}>
               <View style={styles.statusHeader}>
-                <MaterialIcon name="check-circle" size={20} color="#2E7D32" />
+                <MaterialIcon source="check-circle" size={20} color="#2E7D32" />
                 <Text variant="titleSmall" style={styles.statusTitle}>
                   Camera Detected
                 </Text>
@@ -555,7 +555,7 @@ export default function CameraFeedScreen() {
         {/* Instructions Section */}
         <Surface style={styles.sectionCard} elevation={3}>
           <View style={styles.sectionHeader}>
-            <MaterialIcon name="information" size={24} color={theme.colors.primary} />
+            <MaterialIcon source="information" size={24} color={theme.colors.primary} />
             <Text variant="titleLarge" style={styles.sectionTitle}>
               Setup Instructions
             </Text>
@@ -603,7 +603,7 @@ export default function CameraFeedScreen() {
         >
           <Surface style={styles.helpContent} elevation={4}>
             <View style={styles.helpHeader}>
-              <MaterialIcon name="help-circle" size={32} color={theme.colors.primary} />
+              <MaterialIcon source="help-circle" size={32} color={theme.colors.primary} />
               <Text variant="headlineSmall" style={styles.helpTitle}>
                 Connection Help
               </Text>
@@ -640,7 +640,7 @@ export default function CameraFeedScreen() {
                 }
               ].map((item, index) => (
                 <View key={index} style={styles.helpItem}>
-                  <MaterialIcon name="alert-circle" size={16} color={theme.colors.error} />
+                  <MaterialIcon source="alert-circle" size={16} color={theme.colors.error} />
                   <View style={styles.helpItemContent}>
                     <Text variant="bodyMedium" style={styles.helpItemTitle}>
                       {item.issue}

@@ -14,7 +14,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 
 import { usePatientStore } from '../../store/patientStore';
 import { useAuthStore } from '../../store/authStore';
@@ -186,10 +186,10 @@ export default function QuickAddPatientScreen({ navigation }: Props) {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
+      
       <ScrollView style={styles.scrollView}>
-        {renderHeader()}
-        
         <Card style={styles.searchCard}>
           <Card.Content>
             <Text variant="titleMedium" style={styles.cardTitle}>
@@ -258,7 +258,7 @@ export default function QuickAddPatientScreen({ navigation }: Props) {
           <Card style={styles.patientCard}>
             <Card.Content>
               <View style={styles.patientHeader}>
-                <MaterialCommunityIcons name="account-check" size={32} color="#4CAF50" />
+                <Icon source="account-check" size={32} color="#4CAF50" />
                 <Text variant="titleLarge" style={styles.patientName}>
                   Patient Found!
                 </Text>
@@ -365,12 +365,10 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     elevation: 4,
-    marginTop: -50,
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

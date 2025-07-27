@@ -18,7 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 
 interface CameraPreset {
   name: string;
@@ -187,7 +187,7 @@ export default function CameraFeedScreen() {
             <View style={styles.headerContent}>
               <View style={styles.headerLeft}>
                 <View style={styles.titleContainer}>
-                  <MaterialCommunityIcons name="video" size={24} color="white" />
+                  <MaterialDesignIcons name="video" size={24} color="white" />
                   <Text variant="titleLarge" style={styles.headerTitle}>
                     Live Camera Feed
                   </Text>
@@ -261,7 +261,7 @@ export default function CameraFeedScreen() {
         
         <Surface style={styles.footer} elevation={2}>
           <View style={styles.footerContent}>
-            <MaterialCommunityIcons name="wifi" size={20} color={theme.colors.primary} />
+            <MaterialDesignIcons name="wifi" size={20} color={theme.colors.primary} />
             <Text variant="bodyMedium" style={styles.connectionText}>
               Connected to {ipAddress.split(':')[0]}
             </Text>
@@ -291,7 +291,7 @@ export default function CameraFeedScreen() {
         >
           <View style={styles.headerContent}>
             <Surface style={styles.logoContainer} elevation={2}>
-              <MaterialCommunityIcons name="camera" size={28} color={theme.colors.primary} />
+              <MaterialDesignIcons name="camera" size={28} color={theme.colors.primary} />
             </Surface>
             <Text variant="headlineSmall" style={styles.headerTitle}>
               Camera Setup
@@ -317,7 +317,7 @@ export default function CameraFeedScreen() {
         {/* Connection Section */}
         <Surface style={styles.sectionCard} elevation={3}>
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="video-outline" size={24} color={theme.colors.primary} />
+            <MaterialDesignIcons name="video-outline" size={24} color={theme.colors.primary} />
             <Text variant="titleLarge" style={styles.sectionTitle}>
               Camera Connection
             </Text>
@@ -354,7 +354,7 @@ export default function CameraFeedScreen() {
           {showPresets && (
             <Surface style={styles.presetsCard} elevation={2}>
               <View style={styles.presetsHeader}>
-                <MaterialCommunityIcons name="bookmark-multiple" size={20} color={theme.colors.primary} />
+                <MaterialDesignIcons name="bookmark-multiple" size={20} color={theme.colors.primary} />
                 <Text variant="titleSmall" style={styles.presetsTitle}>
                   Common Camera Configurations
                 </Text>
@@ -392,7 +392,7 @@ export default function CameraFeedScreen() {
           {cameraStatus && (
             <Surface style={styles.statusCard} elevation={2}>
               <View style={styles.statusHeader}>
-                <MaterialCommunityIcons name="check-circle" size={20} color="#2E7D32" />
+                <MaterialDesignIcons name="check-circle" size={20} color="#2E7D32" />
                 <Text variant="titleSmall" style={styles.statusTitle}>
                   Camera Detected
                 </Text>
@@ -418,7 +418,7 @@ export default function CameraFeedScreen() {
         {/* Instructions Section */}
         <Surface style={styles.sectionCard} elevation={3}>
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="information" size={24} color={theme.colors.primary} />
+            <MaterialDesignIcons name="information" size={24} color={theme.colors.primary} />
             <Text variant="titleLarge" style={styles.sectionTitle}>
               Setup Instructions
             </Text>

@@ -2,7 +2,8 @@ import React from 'react';
 import { Icon } from 'react-native-paper';
 
 interface IconFallbackProps {
-  name: string;
+  name?: string;
+  source?: string;
   size?: number;
   color?: string;
   style?: any;
@@ -10,33 +11,78 @@ interface IconFallbackProps {
 
 // Comprehensive map of icon names to React Native Paper / Material Design icon names
 const iconMap: { [key: string]: string } = {
+  // Patient Location
+  'patient-location': 'map-marker',
+  'location': 'map-marker',
+  'map': 'map-marker',
+  'gps': 'crosshairs-gps',
+  // Live Monitoring
+  'live-monitoring': 'pulse',
+  'monitor': 'pulse',
+  'monitoring': 'pulse',
+  'heart-pulse': 'heart-pulse',
+  // Analytics
+  'analytics': 'chart-line',
+  'chart': 'chart-line',
+  'chart-line': 'chart-line',
+  'chart-bar': 'chart-bar',
+  // Subscription
+  'subscription': 'star',
+  'star': 'star',
+  'account-star': 'account-star',
+  'premium': 'star',
+  // Out of Range
+  'out-of-range': 'alert',
+  'alert': 'alert',
+  'alert-circle': 'alert-circle-outline',
+  'warning': 'alert',
   // Dashboard icons
   'account-group': 'account-group',
   'heart': 'heart',
-  'heart-pulse': 'heart-pulse',
-  'alert-circle': 'alert-circle',
+  // 'heart-pulse': 'heart',  // Duplicate, keep the new mapping above
+  // 'alert-circle': 'alert-circle', // Duplicate, keep the new mapping above
   'calendar-check': 'calendar-check',
   'account-plus': 'account-plus',
-  'chart-line': 'chart-line',
+  // 'chart-line': 'chart-line', // Duplicate, keep the new mapping above
   'bell-alert': 'bell-alert',
   'calendar-clock': 'calendar-clock',
   'loading': 'loading',
   'account-search': 'account-search',
   'filter-variant': 'filter-variant',
   'plus': 'plus',
+  'check-circle': 'check-circle',
+  'circle-outline': 'circle-outline',
   
   // Vitals & Health icons
-  'water-percent': 'water-percent',
+  'water-percent': 'water',  // Map to simpler 'water' since 'water-percent' may not exist
   'walk': 'walk',
+  'lungs': 'lungs',
   'thermometer': 'thermometer',
   'scale-bathroom': 'scale-bathroom',
   'sleep': 'sleep',
   'mood-happy': 'emoticon-happy',
   'mood-sad': 'emoticon-sad',
+  'emoticon-happy': 'emoticon-happy',
+  'emoticon-sad': 'emoticon-sad',
+  'emoticon-neutral': 'emoticon-neutral',
   'medication': 'pill',
   'pill': 'pill',
-  'lungs': 'lungs',
   'clipboard-list': 'clipboard-list',
+  
+  // Additional dashboard and UI icons
+  'weight-kilogram': 'scale-bathroom',  // Map to simpler scale icon
+  'human-male-height': 'human-male',  // Map to simpler human icon
+  'map-marker': 'map-marker',
+  'lightbulb': 'lightbulb',
+  'alert-octagon': 'alert-octagon',
+  'chart-donut': 'chart-pie',  // Map to supported chart icon
+  'file-chart': 'chart-line',  // Map to line chart
+  'clock-outline': 'clock-outline',
+  'bell-cog': 'bell',  // Map to simpler bell icon
+  'harddisk': 'harddisk',
+  'brain': 'head-outline',  // Map to head outline for brain
+  'run': 'run-fast',  // Map to run-fast
+  'food-apple': 'food',  // Map to generic food icon
   
   // Camera & Media icons
   'camera': 'camera',
@@ -65,7 +111,6 @@ const iconMap: { [key: string]: string } = {
   'chevron-down': 'chevron-down',
   'close': 'close',
   'check': 'check',
-  'check-circle': 'check-circle',
   'menu': 'menu',
   'dots-vertical': 'dots-vertical',
   'dots-horizontal': 'dots-horizontal',
@@ -84,9 +129,6 @@ const iconMap: { [key: string]: string } = {
   'download': 'download',
   'upload': 'upload',
   'circle': 'circle',
-  'circle-outline': 'circle-outline',
-  'server': 'server',
-  'clock-fast': 'clock-fast',
   
   // Settings & Configuration icons
   'cog': 'cog',
@@ -108,7 +150,6 @@ const iconMap: { [key: string]: string } = {
   'folder-outline': 'folder-outline',
   'file-pdf': 'file-pdf-box',
   'file-image': 'file-image',
-  'file-chart': 'file-chart',
   
   // Communication & Social icons
   'message-text': 'message-text',
@@ -122,16 +163,11 @@ const iconMap: { [key: string]: string } = {
   
   // Data & Analytics icons
   'chart-pie': 'chart-pie',
-  'chart-bar': 'chart-bar',
-  'chart-donut': 'chart-donut',
+  // 'chart-bar': 'chart-bar', // Duplicate, keep the new mapping above
   'trending-up': 'trending-up',
   'trending-down': 'trending-down',
-  'trending-neutral': 'trending-neutral',
-  'analytics': 'chart-line',
+  // 'analytics': 'chart-line', // Duplicate, keep the new mapping above
   'statistics': 'chart-bar',
-  'monitor-dashboard': 'monitor-dashboard',
-  'google-analytics': 'google-analytics',
-  'lightbulb': 'lightbulb',
   
   // User & Profile icons
   'account': 'account',
@@ -155,7 +191,7 @@ const iconMap: { [key: string]: string } = {
   'paste': 'content-paste',
   
   // Bookmarks & Favorites icons
-  'star': 'star',
+  // 'star': 'star', // Duplicate, keep the new mapping above
   'star-outline': 'star-outline',
   'bookmark': 'bookmark',
   'bookmark-outline': 'bookmark-outline',
@@ -187,7 +223,6 @@ const iconMap: { [key: string]: string } = {
   
   // Time & Calendar icons
   'clock': 'clock',
-  'clock-outline': 'clock-outline',
   'calendar': 'calendar',
   'calendar-outline': 'calendar-outline',
   'calendar-today': 'calendar-today',
@@ -202,14 +237,12 @@ const iconMap: { [key: string]: string } = {
   'first-aid': 'medical-bag',
   'emergency': 'alert-circle',
   'urgent': 'alert',
-  'warning': 'alert-triangle',
+  // 'warning': 'alert-triangle', // Duplicate, keep the new mapping above
   'danger': 'alert-octagon',
   
   // Subscription & Payment icons
   'credit-card': 'credit-card',
   'payment': 'credit-card',
-  'subscription': 'crown',
-  'premium': 'crown',
   'enterprise': 'domain',
   'free': 'gift',
   'pricing': 'currency-usd',
@@ -218,9 +251,11 @@ const iconMap: { [key: string]: string } = {
   'default': 'circle-outline'
 };
 
-export default function IconFallback({ name, size = 24, color, style }: IconFallbackProps) {
-  const iconName = iconMap[name] || iconMap['default'];
-  
+export default function IconFallback({ name, source, size = 24, color, style }: IconFallbackProps) {
+  // Accept both name and source, prefer name if both provided
+  const iconKey = name || source || 'default';
+  // Try direct, then lowercase, then fallback
+  const iconName = iconMap[iconKey] || iconMap[iconKey.toLowerCase?.()] || iconKey || iconMap['default'];
   return (
     <Icon 
       source={iconName}

@@ -20,7 +20,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import { useAuthStore } from '../../store/authStore';
 import { UserRole } from '../../types';
 
@@ -235,7 +235,7 @@ export default function SignUpScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+    <View style={styles.container}>
       <StatusBar hidden={true} backgroundColor="transparent" translucent={true} />
       <LinearGradient
         colors={[
@@ -248,6 +248,7 @@ export default function SignUpScreen({ navigation }: Props) {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
+        <SafeAreaView style={styles.safeArea}>
           <KeyboardAvoidingView 
             style={styles.keyboardAvoidingView}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -278,7 +279,7 @@ export default function SignUpScreen({ navigation }: Props) {
                     colors={['#4CAF50', '#2196F3', '#9C27B0']}
                     style={styles.logoGradientInner}
                   >
-                    <MaterialCommunityIcons name="medical-bag" size={26} color="white" />
+                    <Icon source="medical-bag" size={26} color="white" />
                   </LinearGradient>
                 </Animated.View>
                 
@@ -318,7 +319,7 @@ export default function SignUpScreen({ navigation }: Props) {
                   {/* Personal Information Section */}
                   <View style={styles.sectionContainer}>
                     <View style={styles.sectionHeader}>
-                      <MaterialCommunityIcons name="account-circle" size={22} color={theme.colors.primary} />
+                      <Icon source="account-circle" size={22} color={theme.colors.primary} />
                       <Text variant="titleMedium" style={styles.sectionTitle}>
                         Personal Information
                       </Text>
@@ -399,7 +400,7 @@ export default function SignUpScreen({ navigation }: Props) {
                   {/* Contact Information Section */}
                   <View style={styles.sectionContainer}>
                     <View style={styles.sectionHeader}>
-                      <MaterialCommunityIcons name="contacts" size={22} color={theme.colors.primary} />
+                      <Icon source="contacts" size={22} color={theme.colors.primary} />
                       <Text variant="titleMedium" style={styles.sectionTitle}>
                         Contact Information
                       </Text>
@@ -455,7 +456,7 @@ export default function SignUpScreen({ navigation }: Props) {
                   {/* Enhanced Role Selection Section */}
                   <View style={styles.sectionContainer}>
                     <View style={styles.sectionHeader}>
-                      <MaterialCommunityIcons name="account-group" size={22} color={theme.colors.primary} />
+                      <Icon source="account-group" size={22} color={theme.colors.primary} />
                       <Text variant="titleMedium" style={styles.sectionTitle}>
                         Role Selection
                       </Text>
@@ -511,7 +512,7 @@ export default function SignUpScreen({ navigation }: Props) {
                   {/* Enhanced Security Section */}
                   <View style={styles.sectionContainer}>
                     <View style={styles.sectionHeader}>
-                      <MaterialCommunityIcons name="shield-account" size={22} color={theme.colors.primary} />
+                      <Icon source="shield-account" size={22} color={theme.colors.primary} />
                       <Text variant="titleMedium" style={styles.sectionTitle}>
                         Security
                       </Text>
@@ -665,15 +666,15 @@ export default function SignUpScreen({ navigation }: Props) {
                   {/* Enhanced Footer */}
                   <View style={styles.footer}>
                     <View style={styles.securityIndicators}>
-                      <MaterialCommunityIcons name="shield-check" size={14} color="rgba(255,255,255,0.9)" />
+                      <Icon source="shield-check" size={14} color="rgba(255,255,255,0.9)" />
                       <Text variant="bodySmall" style={styles.securityText}>
                         Secure Registration
                       </Text>
-                      <MaterialCommunityIcons name="certificate" size={14} color="rgba(255,255,255,0.9)" />
+                      <Icon source="certificate" size={14} color="rgba(255,255,255,0.9)" />
                       <Text variant="bodySmall" style={styles.securityText}>
                         HIPAA Compliant
                       </Text>
-                      <MaterialCommunityIcons name="lock" size={14} color="rgba(255,255,255,0.9)" />
+                      <Icon source="lock" size={14} color="rgba(255,255,255,0.9)" />
                       <Text variant="bodySmall" style={styles.securityText}>
                         256-bit SSL
                       </Text>
@@ -683,8 +684,9 @@ export default function SignUpScreen({ navigation }: Props) {
               </Animated.View>
             </ScrollView>
           </KeyboardAvoidingView>
+        </SafeAreaView>
       </LinearGradient>
-    </SafeAreaView>
+    </View>
   );
 }
 

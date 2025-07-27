@@ -34,7 +34,7 @@ import {
   TouchableRipple,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -68,7 +68,11 @@ interface SettingItem {
   premium?: boolean;
 }
 
-export default function UltraEnhancedSettingsScreen() {
+interface Props {
+  navigation?: any;
+}
+
+export default function UltraEnhancedSettingsScreen({ navigation }: Props = {}) {
   const theme = useTheme();
   const { user, signOut } = useAuthStore();
   const { 
@@ -433,9 +437,18 @@ export default function UltraEnhancedSettingsScreen() {
         style={styles.headerGradient}
       >
         <Animated.View style={[styles.profileSection, { opacity: headerOpacity }]}>
+          {navigation && (
+            <IconButton
+              icon="arrow-left"
+              iconColor="#FFFFFF"
+              size={24}
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            />
+          )}
           <Avatar.Image
             size={80}
-            source={{ uri: `https://ui-avatars.com/api/?name=${user?.fullName}&background=6200ee&color=fff` }}
+            source={{ uri: `https://ui-avatars.com/api/?source=${user?.fullName}&background=6200ee&color=fff` }}
             style={styles.avatar}
           />
           <View style={styles.profileInfo}>
@@ -525,8 +538,8 @@ export default function UltraEnhancedSettingsScreen() {
         <View style={styles.settingItemContent}>
           <View style={styles.settingItemLeft}>
             <Surface style={styles.iconContainer} elevation={1}>
-              <MaterialCommunityIcons 
-                name={item.icon} 
+              <Icon
+                source={item.icon} 
                 size={20} 
                 color={isDisabled ? theme.colors.outline : theme.colors.primary} 
               />
@@ -612,8 +625,8 @@ export default function UltraEnhancedSettingsScreen() {
           <View style={styles.sectionHeader}>
             <View style={styles.sectionHeaderLeft}>
               <Surface style={[styles.sectionIcon, { backgroundColor: section.color + '20' }]} elevation={1}>
-                <MaterialCommunityIcons 
-                  name={section.icon} 
+                <Icon
+                  source={section.icon} 
                   size={24} 
                   color={section.color} 
                 />
@@ -759,7 +772,7 @@ export default function UltraEnhancedSettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView 
         style={styles.scrollView} 
         showsVerticalScrollIndicator={false}
@@ -811,16 +824,19 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     borderRadius: 0,
-    marginTop: -50,
   },
   headerGradient: {
-    paddingVertical: 24,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    paddingTop: 74,
+    paddingTop: 44,
   },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  backButton: {
+    margin: 0,
+    marginRight: 8,
   },
   avatar: {
     borderWidth: 3,

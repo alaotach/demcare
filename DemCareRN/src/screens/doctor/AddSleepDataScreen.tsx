@@ -10,7 +10,7 @@ import {
   Surface
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, SleepData } from '../../types';
@@ -145,7 +145,7 @@ export default function AddSleepDataScreen({ navigation, route }: Props) {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           />
-          <MaterialCommunityIcons name="sleep" size={32} color="#FFFFFF" />
+          <Icon source="sleep" size={32} color="#FFFFFF" />
           <View style={styles.headerText}>
             <Text variant="headlineSmall" style={styles.headerTitle}>
               Add Sleep Data
@@ -160,9 +160,9 @@ export default function AddSleepDataScreen({ navigation, route }: Props) {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
       <ScrollView style={styles.scrollView}>
-        {renderHeader()}
         <View style={styles.content}>
           {/* Date Selection */}
           <Card style={styles.card}>
@@ -211,7 +211,7 @@ export default function AddSleepDataScreen({ navigation, route }: Props) {
               </View>
 
               <Surface style={styles.summaryContainer}>
-                <MaterialCommunityIcons name="sleep" size={24} color={theme.colors.primary} />
+                <Icon source="sleep" size={24} color={theme.colors.primary} />
                 <Text variant="titleMedium" style={styles.totalSleepText}>
                   Total Sleep: {calculateTotalSleep().toFixed(1)} hours
                 </Text>
@@ -346,12 +346,10 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     elevation: 4,
-    marginTop: -50,
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

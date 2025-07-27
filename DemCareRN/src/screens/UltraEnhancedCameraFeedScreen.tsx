@@ -471,7 +471,7 @@ export default function UltraEnhancedCameraFeedScreen() {
           {/* Quality Indicator */}
           <View style={styles.qualityIndicator}>
             <Surface style={styles.qualityBadge} elevation={4}>
-              <MaterialIcon name="high-definition-box" size={16} color={theme.colors.primary} />
+              <MaterialIcon source="high-definition-box" size={16} color={theme.colors.primary} />
               <Text style={styles.qualityText}>HD</Text>
             </Surface>
           </View>
@@ -534,7 +534,7 @@ export default function UltraEnhancedCameraFeedScreen() {
                   colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)']}
                   style={styles.logoGradient}
                 >
-                  <MaterialIcon name="video" size={32} color="white" />
+                  <MaterialIcon source="video" size={32} color="white" />
                 </LinearGradient>
               </Surface>
 
@@ -557,7 +557,7 @@ export default function UltraEnhancedCameraFeedScreen() {
                   ]}
                 >
                   <MaterialIcon 
-                    name={
+                    source={
                       connectionState.status === 'connected' ? 'wifi' :
                       connectionState.status === 'connecting' ? 'wifi-sync' :
                       connectionState.status === 'error' ? 'wifi-off' : 'wifi-strength-outline'
@@ -608,7 +608,7 @@ export default function UltraEnhancedCameraFeedScreen() {
               style={styles.cardGradient}
             >
               <View style={styles.cardHeader}>
-                <MaterialIcon name="router-wireless" size={28} color={theme.colors.primary} />
+                <MaterialIcon source="router-wireless" size={28} color={theme.colors.primary} />
                 <Text variant="headlineSmall" style={styles.cardTitle}>
                   Camera Connection
                 </Text>
@@ -662,7 +662,7 @@ export default function UltraEnhancedCameraFeedScreen() {
                   style={styles.presetsToggle}
                 >
                   <MaterialIcon 
-                    name="bookmark-multiple" 
+                    source="bookmark-multiple" 
                     size={20} 
                     color={theme.colors.primary} 
                   />
@@ -670,7 +670,7 @@ export default function UltraEnhancedCameraFeedScreen() {
                     Quick Connect Presets
                   </Text>
                   <MaterialIcon 
-                    name={showPresets ? "chevron-up" : "chevron-down"} 
+                    source={showPresets ? "chevron-up" : "chevron-down"} 
                     size={20} 
                     color={theme.colors.primary} 
                   />
@@ -688,7 +688,7 @@ export default function UltraEnhancedCameraFeedScreen() {
                         >
                           <Surface style={styles.presetSurface} elevation={2}>
                             <MaterialIcon 
-                              name={preset.icon} 
+                              source={preset.icon} 
                               size={24} 
                               color={theme.colors.primary} 
                             />

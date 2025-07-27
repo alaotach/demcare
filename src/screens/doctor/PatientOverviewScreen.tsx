@@ -14,7 +14,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart, BarChart, PieChart } from 'react-native-chart-kit';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, SleepData, MoodEntry, DietEntry, PhysicalActivity } from '../../types';
@@ -138,7 +138,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
       <View style={styles.summaryGrid}>
         <Card style={[styles.summaryCard, { backgroundColor: '#E3F2FD' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="sleep" size={32} color="#1976D2" />
+            <MaterialDesignIcons name="sleep" size={32} color="#1976D2" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Sleep</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#1976D2' }]}>
               {todaySummary.sleep ? `${todaySummary.sleep.totalSleepHours}h` : 'No data'}
@@ -146,7 +146,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
             {todaySummary.sleep && (
               <View style={styles.starsContainer}>
                 {[1, 2, 3, 4, 5].map(star => (
-                  <MaterialCommunityIcons 
+                  <MaterialDesignIcons 
                     key={star}
                     name={star <= todaySummary.sleep!.sleepQuality ? "star" : "star-outline"}
                     size={12}
@@ -160,7 +160,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#FFF3E0' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="emoticon-happy" size={32} color="#F57C00" />
+            <MaterialDesignIcons name="emoticon-happy" size={32} color="#F57C00" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Mood</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#F57C00' }]}>
               {todaySummary.avgMood > 0 ? todaySummary.avgMood.toFixed(1) : 'No data'}
@@ -168,7 +168,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
             {todaySummary.avgMood > 0 && (
               <View style={styles.starsContainer}>
                 {[1, 2, 3, 4, 5].map(star => (
-                  <MaterialCommunityIcons 
+                  <MaterialDesignIcons 
                     key={star}
                     name={star <= Math.round(todaySummary.avgMood) ? "star" : "star-outline"}
                     size={12}
@@ -182,7 +182,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#E8F5E8' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="food-apple" size={32} color="#388E3C" />
+            <MaterialDesignIcons name="food-apple" size={32} color="#388E3C" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Meals</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#388E3C' }]}>
               {todaySummary.totalMeals}
@@ -195,7 +195,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#F3E5F5' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="walk" size={32} color="#7B1FA2" />
+            <MaterialDesignIcons name="walk" size={32} color="#7B1FA2" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Activity</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#7B1FA2' }]}>
               {todaySummary.totalActivity}min
@@ -208,7 +208,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#FFF8E1' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="toilet" size={32} color="#F9A825" />
+            <MaterialDesignIcons name="toilet" size={32} color="#F9A825" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Bathroom</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#F9A825' }]}>
               {todaySummary.bathroomVisits}
@@ -221,7 +221,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
 
         <Card style={[styles.summaryCard, { backgroundColor: '#FFEBEE' }]}>
           <Card.Content style={styles.summaryContent}>
-            <MaterialCommunityIcons name="heart-pulse" size={32} color="#D32F2F" />
+            <MaterialDesignIcons name="heart-pulse" size={32} color="#D32F2F" />
             <Text variant="bodySmall" style={styles.summaryLabel}>Vitals</Text>
             <Text variant="titleMedium" style={[styles.summaryValue, { color: '#D32F2F' }]}>
               {patient.vitals?.heartRate || '--'}
@@ -336,7 +336,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
                 <Text variant="bodyMedium">Quality:</Text>
                 <View style={styles.starsContainer}>
                   {[1, 2, 3, 4, 5].map(star => (
-                    <MaterialCommunityIcons 
+                    <MaterialDesignIcons 
                       key={star}
                       name={star <= todaySummary.sleep!.sleepQuality ? "star" : "star-outline"}
                       size={16}
@@ -383,7 +383,7 @@ export default function PatientOverviewScreen({ navigation, route }: Props) {
                 </Text>
                 <View style={styles.starsContainer}>
                   {[1, 2, 3, 4, 5].map(star => (
-                    <MaterialCommunityIcons 
+                    <MaterialDesignIcons 
                       key={star}
                       name={star <= sleep.sleepQuality ? "star" : "star-outline"}
                       size={14}

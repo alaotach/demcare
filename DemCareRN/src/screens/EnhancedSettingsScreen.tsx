@@ -24,7 +24,7 @@ import {
   Chip,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { useAuthStore } from '../store/authStore';
@@ -91,7 +91,7 @@ export default function EnhancedSettingsScreen() {
         <View style={styles.profileSection}>
           <Avatar.Image
             size={80}
-            source={{ uri: `https://ui-avatars.com/api/?name=${user?.fullName}&background=6200ee&color=fff` }}
+            source={{ uri: `https://ui-avatars.com/api/?source=${user?.fullName}&background=6200ee&color=fff` }}
             style={styles.avatar}
           />
           <View style={styles.profileInfo}>
@@ -125,7 +125,7 @@ export default function EnhancedSettingsScreen() {
     <Card style={styles.settingsCard}>
       <Card.Content>
         <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="cog" size={24} color={theme.colors.primary} />
+          <Icon source="cog" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.cardTitle}>
             Preferences
           </Text>
@@ -177,7 +177,7 @@ export default function EnhancedSettingsScreen() {
     <Card style={styles.settingsCard}>
       <Card.Content>
         <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="shield-account" size={24} color={theme.colors.primary} />
+          <Icon source="shield-account" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.cardTitle}>
             Data & Privacy
           </Text>
@@ -215,7 +215,7 @@ export default function EnhancedSettingsScreen() {
     <Card style={styles.settingsCard}>
       <Card.Content>
         <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="help-circle" size={24} color={theme.colors.primary} />
+          <Icon source="help-circle" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.cardTitle}>
             Support & Help
           </Text>
@@ -262,7 +262,7 @@ export default function EnhancedSettingsScreen() {
     <Card style={styles.settingsCard}>
       <Card.Content>
         <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="information" size={24} color={theme.colors.primary} />
+          <Icon source="information" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.cardTitle}>
             About DemCare
           </Text>
@@ -322,7 +322,7 @@ export default function EnhancedSettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {renderHeader()}
         {renderPreferences()}
@@ -383,12 +383,10 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     borderRadius: 0,
-    marginTop: -50,
   },
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
   },
   profileSection: {
     flexDirection: 'row',

@@ -15,7 +15,7 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { useAuthStore } from '../../store/authStore';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, PatientStatus } from '../../types';
@@ -115,7 +115,7 @@ export default function DoctorDashboard({ navigation }: Props) {
     <View style={styles.statsContainer}>
       <Card style={[styles.statsCard, { backgroundColor: '#E8F5E8' }]}>
         <Card.Content style={styles.statsContent}>
-          <MaterialCommunityIcons name="account-group" size={24} color="#2E7D32" />
+          <MaterialDesignIcons name="account-group" size={24} color="#2E7D32" />
           <Text variant="bodySmall" style={styles.statsLabel}>Total Patients</Text>
           <Text variant="titleLarge" style={[styles.statsValue, { color: '#2E7D32' }]}>
             {stats.total}
@@ -125,7 +125,7 @@ export default function DoctorDashboard({ navigation }: Props) {
 
       <Card style={[styles.statsCard, { backgroundColor: '#E8F5E8' }]}>
         <Card.Content style={styles.statsContent}>
-          <MaterialCommunityIcons name="check-circle" size={24} color="#4CAF50" />
+          <MaterialDesignIcons name="check-circle" size={24} color="#4CAF50" />
           <Text variant="bodySmall" style={styles.statsLabel}>Normal</Text>
           <Text variant="titleLarge" style={[styles.statsValue, { color: '#4CAF50' }]}>
             {stats.inRange}
@@ -135,7 +135,7 @@ export default function DoctorDashboard({ navigation }: Props) {
 
       <Card style={[styles.statsCard, { backgroundColor: '#FFF3E0' }]}>
         <Card.Content style={styles.statsContent}>
-          <MaterialCommunityIcons name="alert-circle" size={24} color="#FF9800" />
+          <MaterialDesignIcons name="alert-circle" size={24} color="#FF9800" />
           <Text variant="bodySmall" style={styles.statsLabel}>Alerts</Text>
           <Text variant="titleLarge" style={[styles.statsValue, { color: '#FF9800' }]}>
             {stats.outOfRange}
@@ -145,7 +145,7 @@ export default function DoctorDashboard({ navigation }: Props) {
 
       <Card style={[styles.statsCard, { backgroundColor: '#F5F5F5' }]}>
         <Card.Content style={styles.statsContent}>
-          <MaterialCommunityIcons name="circle-outline" size={24} color="#9E9E9E" />
+          <MaterialDesignIcons name="circle-outline" size={24} color="#9E9E9E" />
           <Text variant="bodySmall" style={styles.statsLabel}>Offline</Text>
           <Text variant="titleLarge" style={[styles.statsValue, { color: '#9E9E9E' }]}>
             {stats.offline}
@@ -226,7 +226,7 @@ export default function DoctorDashboard({ navigation }: Props) {
           <View style={styles.vitalsContainer}>
             <View style={styles.vitalsGrid}>
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="heart" size={16} color="#E91E63" />
+                <MaterialDesignIcons name="heart" size={16} color="#E91E63" />
                 <Text variant="bodySmall" style={styles.vitalLabel}>Heart Rate</Text>
                 <Text variant="bodyMedium" style={[styles.vitalValue, { color: '#E91E63' }]}>
                   {patient.vitals.heartRate} BPM
@@ -234,7 +234,7 @@ export default function DoctorDashboard({ navigation }: Props) {
               </View>
 
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="water" size={16} color="#2196F3" />
+                <MaterialDesignIcons name="water" size={16} color="#2196F3" />
                 <Text variant="bodySmall" style={styles.vitalLabel}>SpO₂</Text>
                 <Text variant="bodyMedium" style={[styles.vitalValue, { color: '#2196F3' }]}>
                   {patient.vitals.oxygenSaturation}%
@@ -242,7 +242,7 @@ export default function DoctorDashboard({ navigation }: Props) {
               </View>
 
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="lungs" size={16} color="#4CAF50" />
+                <MaterialDesignIcons name="lungs" size={16} color="#4CAF50" />
                 <Text variant="bodySmall" style={styles.vitalLabel}>Resp. Rate</Text>
                 <Text variant="bodyMedium" style={[styles.vitalValue, { color: '#4CAF50' }]}>
                   {patient.vitals.respiratoryRate}/min
@@ -250,7 +250,7 @@ export default function DoctorDashboard({ navigation }: Props) {
               </View>
 
               <View style={styles.vitalItem}>
-                <MaterialCommunityIcons name="walk" size={16} color="#FF9800" />
+                <MaterialDesignIcons name="walk" size={16} color="#FF9800" />
                 <Text variant="bodySmall" style={styles.vitalLabel}>Steps</Text>
                 <Text variant="bodyMedium" style={[styles.vitalValue, { color: '#FF9800' }]}>
                   {patient.vitals.stepCount}
@@ -347,7 +347,7 @@ export default function DoctorDashboard({ navigation }: Props) {
             filteredPatients.map(renderPatientCard)
           ) : (
             <View style={styles.emptyContainer}>
-              <MaterialCommunityIcons 
+              <MaterialDesignIcons 
                 name="account-plus" 
                 size={64} 
                 color={theme.colors.outline} 

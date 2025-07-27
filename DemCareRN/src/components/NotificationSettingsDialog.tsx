@@ -21,7 +21,7 @@ import {
   RadioButton,
   Slider,
 } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 
 interface NotificationPreference {
   id: string;
@@ -204,7 +204,7 @@ export default function NotificationSettingsDialog({ onClose, visible }: Props) 
     <Card style={styles.sectionCard}>
       <Card.Content>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons name="bell-cog" size={24} color={theme.colors.primary} />
+          <Icon source="bell-cog" size={24} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.sectionTitle}>
             Global Settings
           </Text>
@@ -278,8 +278,8 @@ export default function NotificationSettingsDialog({ onClose, visible }: Props) 
       <View style={styles.preferenceHeader}>
         <View style={styles.preferenceLeft}>
           <Surface style={styles.preferenceIcon} elevation={1}>
-            <MaterialCommunityIcons 
-              name={preference.icon} 
+            <Icon source= 
+              source={preference.icon} 
               size={20} 
               color={getCategoryColor(preference.category)} 
             />
@@ -321,8 +321,8 @@ export default function NotificationSettingsDialog({ onClose, visible }: Props) 
           <View style={styles.detailRow}>
             <View style={styles.soundVibrationRow}>
               <View style={styles.soundVibrationItem}>
-                <MaterialCommunityIcons 
-                  name={preference.sound ? "volume-high" : "volume-off"} 
+                <Icon source= 
+                  source={preference.sound ? "volume-high" : "volume-off"} 
                   size={16} 
                   color={preference.sound ? theme.colors.primary : theme.colors.outline} 
                 />
@@ -335,8 +335,8 @@ export default function NotificationSettingsDialog({ onClose, visible }: Props) 
               </View>
               
               <View style={styles.soundVibrationItem}>
-                <MaterialCommunityIcons 
-                  name={preference.vibration ? "vibrate" : "vibrate-off"} 
+                <Icon source= 
+                  source={preference.vibration ? "vibrate" : "vibrate-off"} 
                   size={16} 
                   color={preference.vibration ? theme.colors.primary : theme.colors.outline} 
                 />
@@ -359,8 +359,8 @@ export default function NotificationSettingsDialog({ onClose, visible }: Props) 
       <Card.Content>
         <View style={styles.categoryHeader}>
           <Surface style={[styles.categoryIcon, { backgroundColor: getCategoryColor(category) + '20' }]} elevation={1}>
-            <MaterialCommunityIcons 
-              name={getCategoryIcon(category)} 
+            <Icon source= 
+              source={getCategoryIcon(category)} 
               size={24} 
               color={getCategoryColor(category)} 
             />

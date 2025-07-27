@@ -11,7 +11,7 @@ import {
   Surface
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import { usePatientStore } from '../../store/patientStore';
 import { BeaconService } from '../../services/beacon';
@@ -125,7 +125,7 @@ export default function LogsScreen() {
         style={styles.headerGradient}
       >
         <View style={styles.headerContent}>
-          <MaterialCommunityIcons name="file-document-multiple" size={32} color="#FFFFFF" />
+          <Icon source="file-document-multiple" size={32} color="#FFFFFF" />
           <View style={styles.headerText}>
             <Text variant="headlineSmall" style={styles.headerTitle}>
               Patient Logs
@@ -146,15 +146,15 @@ export default function LogsScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {renderHeader()}
+
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {renderHeader()}
-
         {/* Status Summary */}
         <Card style={styles.summaryCard}>
           <Card.Content>
@@ -292,7 +292,6 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
   },
   headerContent: {
     flexDirection: 'row',

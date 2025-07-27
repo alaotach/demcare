@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WebView } from 'react-native-webview';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import MaterialIcon from '../components/MaterialIcon';
 
 const { width, height } = Dimensions.get('window');
@@ -56,7 +56,7 @@ export default function LiveFeedScreen({ navigation }: LiveFeedScreenProps) {
       <!DOCTYPE html>
       <html>
         <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta source="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body {
               margin: 0;
@@ -180,7 +180,7 @@ export default function LiveFeedScreen({ navigation }: LiveFeedScreenProps) {
     <Card style={styles.inputCard} mode="outlined">
       <Card.Content>
         <View style={styles.inputHeader}>
-          <MaterialIcon name="camera" size={32} color={theme.colors.primary} />
+          <MaterialIcon source="camera" size={32} color={theme.colors.primary} />
           <Text variant="titleLarge" style={styles.inputTitle}>
             Camera Configuration
           </Text>
@@ -319,7 +319,7 @@ export default function LiveFeedScreen({ navigation }: LiveFeedScreenProps) {
               onPress={() => navigation.goBack()}
               style={styles.backButton}
             />
-            <MaterialCommunityIcons name="video" size={32} color="#FFFFFF" />
+            <Icon source="video" size={32} color="#FFFFFF" />
             <View style={styles.headerText}>
               <Text variant="headlineSmall" style={styles.headerTitle}>
                 Live Camera Feed

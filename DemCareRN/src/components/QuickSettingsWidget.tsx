@@ -14,7 +14,7 @@ import {
   TouchableRipple,
   Chip,
 } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { useSettingsStore } from '../store/settingsStore';
@@ -72,8 +72,8 @@ export default function QuickSettingsWidget({ onOpenFullSettings }: Props) {
           style={[styles.quickSettingIcon, { backgroundColor: setting.color + '20' }]} 
           elevation={1}
         >
-          <MaterialCommunityIcons 
-            name={setting.icon} 
+          <Icon source= 
+            source={setting.icon} 
             size={20} 
             color={setting.color} 
           />
@@ -103,7 +103,7 @@ export default function QuickSettingsWidget({ onOpenFullSettings }: Props) {
         <TouchableRipple onPress={() => setExpanded(!expanded)} style={styles.header}>
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
-              <MaterialCommunityIcons name="cog" size={24} color={theme.colors.primary} />
+              <Icon source="cog" size={24} color={theme.colors.primary} />
               <Text variant="titleMedium" style={styles.headerTitle}>
                 Quick Settings
               </Text>
@@ -131,11 +131,11 @@ export default function QuickSettingsWidget({ onOpenFullSettings }: Props) {
             <View style={styles.actions}>
               <TouchableRipple onPress={onOpenFullSettings} style={styles.fullSettingsButton}>
                 <View style={styles.fullSettingsContent}>
-                  <MaterialCommunityIcons name="cog-outline" size={18} color={theme.colors.primary} />
+                  <Icon source="cog-outline" size={18} color={theme.colors.primary} />
                   <Text variant="bodyMedium" style={[styles.fullSettingsText, { color: theme.colors.primary }]}>
                     All Settings
                   </Text>
-                  <MaterialCommunityIcons name="chevron-right" size={16} color={theme.colors.primary} />
+                  <Icon source="chevron-right" size={16} color={theme.colors.primary} />
                 </View>
               </TouchableRipple>
             </View>

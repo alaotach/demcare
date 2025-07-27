@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  View, 
-  StyleSheet, 
-  ScrollView, 
-  Dimensions, 
-  TouchableOpacity,
-  Alert 
-} from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { 
   Text, 
   Card, 
@@ -14,19 +7,10 @@ import {
   Chip, 
   useTheme,
   FAB,
-  ActivityIndicator,
-  Surface,
-  Avatar,
-  Divider,
-  IconButton,
-  Badge,
-  ProgressBar
+  ActivityIndicator
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import LinearGradient from 'react-native-linear-gradient';
-
 import { Patient, PatientStatus, VitalSigns } from '../../types';
 import { usePatientStore } from '../../store/patientStore';
 

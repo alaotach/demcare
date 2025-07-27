@@ -9,6 +9,8 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from './firebase';
 import { User, UserRole } from '../types';
+import ConfigService from './config';
+import { MockAuthService } from './mockService';
 
 export interface SignUpData {
   fullName: string;
@@ -27,6 +29,11 @@ export interface SignInData {
 
 export class AuthService {
   static async signUp(data: SignUpData): Promise<User> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockAuthService.signUp(data);
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -56,11 +63,16 @@ export class AuthService {
   }
 
   static async signIn(data: SignInData): Promise<User> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockAuthService.signIn(data.email, data.password);
+    }
+
     try {
       // Handle demo credentials without Firebase authentication
       if (data.email === 'doctor@demcare.com' && data.password === 'doctor123') {
         return {
-          id: 'demo-doctor-123',
+          id: 'demo-doctor-1', // Changed to match mock data
           email: 'doctor@demcare.com',
           fullName: 'Dr. Sarah Johnson',
           username: 'dr_sarah',
@@ -74,7 +86,7 @@ export class AuthService {
 
       if (data.email === 'caregiver@demcare.com' && data.password === 'caregiver123') {
         return {
-          id: 'demo-caregiver-456',
+          id: 'demo-caregiver-1', // Changed to match mock data
           email: 'caregiver@demcare.com',
           fullName: 'Maria Rodriguez',
           username: 'maria_care',
@@ -114,6 +126,11 @@ export class AuthService {
   }
 
   static async signOut(): Promise<void> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockAuthService.signOut();
+    }
+
     try {
       await firebaseSignOut(auth);
     } catch (error) {
@@ -130,6 +147,11 @@ export class AuthService {
   }
 
   static async getCurrentUser(): Promise<User | null> {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockAuthService.getCurrentUser();
+    }
+
     try {
       const firebaseUser = auth.currentUser;
       if (!firebaseUser) return null;
@@ -151,10 +173,15 @@ export class AuthService {
   }
 
   static onAuthStateChanged(callback: (user: User | null) => void) {
+    // Check if mock mode is enabled
+    if (ConfigService.isMockModeEnabled()) {
+      return MockAuthService.onAuthStateChanged(callback);
+    }
+
     return onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
         // Check if this is a demo user
-        if (firebaseUser.uid === 'demo-doctor-123' || firebaseUser.uid === 'demo-caregiver-456') {
+        if (firebaseUser.uid === 'demo-doctor-1' || firebaseUser.uid === 'demo-caregiver-1') {
           // For demo users, we don't call getCurrentUser since they're not in Firestore
           callback(null);
           return;

@@ -17,10 +17,12 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'react-native-paper';
 import { usePatientStore } from '../../store/patientStore';
 import { BeaconService, PatientLocation } from '../../services/beacon';
 import MaterialIcon from '../../components/MaterialIcon';
+import { ConfigService } from '../../services/config';
+import { mockPatientLocations } from '../../services/mockData';
 
 const { width } = Dimensions.get('window');
 
@@ -74,8 +76,14 @@ export default function PatientLocationScreen({ navigation }: Props) {
 
   const loadPatientLocations = async () => {
     try {
-      const locations = await BeaconService.getPatientLocations(patients);
-      setPatientLocations(locations);
+      if (ConfigService.isMockModeEnabled()) {
+        // Use comprehensive mock patient location data
+        setPatientLocations(mockPatientLocations);
+        setConnectionStatus('connected');
+      } else {
+        const locations = await BeaconService.getPatientLocations(patients);
+        setPatientLocations(locations);
+      }
     } catch (error) {
       console.error('Error loading patient locations:', error);
       Alert.alert('Error', 'Failed to load patient locations');
@@ -93,14 +101,22 @@ export default function PatientLocationScreen({ navigation }: Props) {
       BeaconService.stopAutoRefresh(autoRefreshInterval.current);
     }
 
-    autoRefreshInterval.current = BeaconService.startAutoRefresh(
-      (locations) => {
-        setPatientLocations(locations);
+    if (ConfigService.isMockModeEnabled()) {
+      // In mock mode, just simulate periodic updates
+      autoRefreshInterval.current = setInterval(() => {
+        setPatientLocations([...mockPatientLocations]); // Force re-render with fresh array
         setConnectionStatus('connected');
-      },
-      patients,
-      2000 // Refresh every 2 seconds
-    );
+      }, 2000);
+    } else {
+      autoRefreshInterval.current = BeaconService.startAutoRefresh(
+        (locations) => {
+          setPatientLocations(locations);
+          setConnectionStatus('connected');
+        },
+        patients,
+        2000 // Refresh every 2 seconds
+      );
+    }
   };
 
   const onRefresh = async () => {
@@ -190,7 +206,7 @@ export default function PatientLocationScreen({ navigation }: Props) {
         
         <View style={styles.cardFooter}>
           <View style={styles.lastSeenContainer}>
-            <MaterialIcon name="clock-outline" size={16} color={theme.colors.onSurfaceVariant} />
+            <MaterialIcon source="clock-outline" size={16} color={theme.colors.onSurfaceVariant} />
             <Text variant="bodySmall" style={styles.lastSeenText}>
               Last seen: {new Date(item.lastSeen).toLocaleString()}
             </Text>
@@ -212,7 +228,7 @@ export default function PatientLocationScreen({ navigation }: Props) {
 
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
-      <MaterialIcon name="account-search" size={64} color={theme.colors.onSurfaceVariant} />
+      <MaterialIcon source="account-search" size={64} color={theme.colors.onSurfaceVariant} />
       <Text variant="headlineSmall" style={styles.emptyTitle}>
         No Patients Found
       </Text>
@@ -259,7 +275,7 @@ export default function PatientLocationScreen({ navigation }: Props) {
               onPress={() => navigation.goBack()}
               style={styles.backButton}
             />
-            <MaterialCommunityIcons name="map-marker-multiple" size={32} color="#FFFFFF" />
+            <Icon source="map-marker-multiple" size={32} color="#FFFFFF" />
             <View style={styles.headerText}>
               <Text variant="headlineSmall" style={styles.headerTitle}>
                 Patient Locations
@@ -315,7 +331,7 @@ export default function PatientLocationScreen({ navigation }: Props) {
         >
           <Surface style={styles.modalContent} elevation={4}>
             <View style={styles.modalHeader}>
-              <MaterialIcon name="server" size={24} color={theme.colors.primary} />
+              <MaterialIcon source="server" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge" style={styles.modalTitle}>
                 Beacon Server Settings
               </Text>
@@ -414,7 +430,7 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingVertical: 24,
     paddingHorizontal: 20,
-    paddingTop: 74,
+    paddingTop: 44,
   },
   headerContent: {
     flexDirection: 'row',

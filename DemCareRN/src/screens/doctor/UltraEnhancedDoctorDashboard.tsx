@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions, Animated, Platform } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { 
   Surface, 
   Text, 
@@ -18,7 +19,7 @@ import {
   Avatar
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
+import { PatientStatus } from '../../types';
 import MaterialIcon from '../../components/MaterialIcon';
 import { useAuthStore } from '../../store/authStore';
 import { usePatientStore } from '../../store/patientStore';
@@ -181,7 +182,7 @@ export default function UltraEnhancedDoctorDashboard({ navigation }: Props) {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Enhanced Header with Gradient */}
-      <Surface style={styles.headerSurface} elevation={6}>
+      <Surface style={styles.headerSurface} elevation={4}>
         <LinearGradient
           colors={[theme.colors.primary, theme.colors.primaryContainer, theme.colors.secondary]}
           start={{ x: 0, y: 0 }}
@@ -236,9 +237,9 @@ export default function UltraEnhancedDoctorDashboard({ navigation }: Props) {
                 {quickStats.map((stat, index) => (
                   <Surface key={index} style={styles.statCard} elevation={3}>
                     <View style={styles.statHeader}>
-                      <MaterialIcon name={stat.icon} size={20} color={stat.color} />
+                      <MaterialIcon source={stat.icon} size={20} color={stat.color} />
                       <View style={[styles.trendContainer, { backgroundColor: getTrendColor(stat.trend || 'stable') + '20' }]}>
-                        <MaterialIcon name={getTrendIcon(stat.trend || 'stable')} size={12} color={getTrendColor(stat.trend || 'stable')} />
+                        <MaterialIcon source={getTrendIcon(stat.trend || 'stable')} size={12} color={getTrendColor(stat.trend || 'stable')} />
                         <Text style={[styles.trendText, { color: getTrendColor(stat.trend || 'stable') }]}>
                           {stat.change}
                         </Text>
@@ -309,7 +310,7 @@ export default function UltraEnhancedDoctorDashboard({ navigation }: Props) {
             {filteredPatients.length === 0 ? (
               <View style={styles.emptyState}>
                 <Surface style={styles.emptyIconContainer} elevation={2}>
-                  <MaterialIcon name="account-search" size={64} color={theme.colors.outline} />
+                  <MaterialIcon source="account-search" size={64} color={theme.colors.outline} />
                 </Surface>
                 <Text variant="headlineSmall" style={styles.emptyTitle}>
                   {searchQuery ? 'No patients found' : 'No patients yet'}
@@ -395,19 +396,19 @@ export default function UltraEnhancedDoctorDashboard({ navigation }: Props) {
                       {/* Quick Vitals Preview */}
                       <View style={styles.vitalsPreview}>
                         <View style={styles.vitalItem}>
-                          <MaterialIcon name="heart" size={16} color="#F44336" />
+                          <MaterialIcon source="heart" size={16} color="#F44336" />
                           <Text style={styles.vitalText}>72 BPM</Text>
                         </View>
                         <View style={styles.vitalItem}>
-                          <MaterialIcon name="water-percent" size={16} color="#2196F3" />
+                          <MaterialIcon source="water-percent" size={16} color="#2196F3" />
                           <Text style={styles.vitalText}>98%</Text>
                         </View>
                         <View style={styles.vitalItem}>
-                          <MaterialIcon name="thermometer" size={16} color="#FF9800" />
+                          <MaterialIcon source="thermometer" size={16} color="#FF9800" />
                           <Text style={styles.vitalText}>98.6°F</Text>
                         </View>
                         <View style={styles.vitalItem}>
-                          <MaterialIcon name="walk" size={16} color="#4CAF50" />
+                          <MaterialIcon source="walk" size={16} color="#4CAF50" />
                           <Text style={styles.vitalText}>1,234</Text>
                         </View>
                       </View>
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 24,
   },
   headerGradient: {
-    paddingTop: 74,
+    paddingTop: 20,
     paddingBottom: 24,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 24,

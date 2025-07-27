@@ -24,6 +24,13 @@ import IconFallback from '../../components/IconFallback';
 import { useAuthStore } from '../../store/authStore';
 import { usePatientStore } from '../../store/patientStore';
 import { Patient, PatientStatus } from '../../types';
+import { ConfigService } from '../../services/config';
+import { 
+  mockSleepData, 
+  mockMoodEntries, 
+  mockDietEntries, 
+  mockPhysicalActivities 
+} from '../../services/mockData';
 
 
 const { width } = Dimensions.get('window');
@@ -115,7 +122,7 @@ const QuickActionButton: React.FC<QuickActionButtonProps> = ({ action, theme }) 
         <Card style={[styles.quickActionCard, { backgroundColor: theme.colors.surface }]} elevation={3}>
           <Card.Content style={styles.quickActionContent}>
             <Surface style={[styles.quickActionIcon, { backgroundColor: action.color }]} elevation={2}>
-              <IconFallback name={action.icon} size={20} color="#FFFFFF" />
+              <IconFallback source={action.icon} size={20} color="#FFFFFF" />
             </Surface>
             <Text variant="bodySmall" style={styles.quickActionText} numberOfLines={2}>
               {action.title}
@@ -144,7 +151,10 @@ export default function DoctorDashboard({ navigation }: Props) {
 
   const loadPatients = async () => {
     if (user?.id) {
+      console.log('Loading patients for doctor ID:', user.id);
+      console.log('Mock mode enabled:', ConfigService.isMockModeEnabled());
       await fetchPatients(user.id);
+      console.log('Patients loaded:', patients.length);
     }
   };
 
@@ -253,7 +263,7 @@ export default function DoctorDashboard({ navigation }: Props) {
         <View style={styles.headerContent}>
           <View style={styles.headerText}>
             <Text variant="headlineSmall" style={styles.welcomeText}>
-              Welcome back, Dr. {user?.fullName?.split(' ')[0]}
+              Welcome back, {user?.fullName?.includes('Dr.') ? user?.fullName?.split(' ')[1] : `Dr. ${user?.fullName?.split(' ')[0]}`}
             </Text>
             <Text variant="bodyMedium" style={styles.headerSubtext}>
               {new Date().toLocaleDateString('en-US', { 
@@ -282,10 +292,10 @@ export default function DoctorDashboard({ navigation }: Props) {
         Today's Overview
       </Text>
       <View style={styles.statsGrid}>
-        <Card style={[styles.statCard, { backgroundColor: '#E3F2FD' }]} elevation={4}>
+        <Card style={[styles.statCard, { backgroundColor: '#E3F2FD' }]}>
           <Card.Content style={styles.statContent}>
-            <Surface style={[styles.statIconContainer, { backgroundColor: '#1976D2' }]} elevation={2}>
-              <IconFallback name="account-group" size={22} color="#FFFFFF" />
+            <Surface style={[styles.statIconContainer, { backgroundColor: '#1976D2' }]}>
+              <IconFallback source="account-group" size={22} color="#FFFFFF" />
             </Surface>
             <Text variant="headlineSmall" style={[styles.statNumber, { color: '#1976D2' }]}>
               {dashboardStats.totalPatients}
@@ -294,10 +304,10 @@ export default function DoctorDashboard({ navigation }: Props) {
           </Card.Content>
         </Card>
 
-        <Card style={[styles.statCard, { backgroundColor: '#E8F5E8' }]} elevation={4}>
+        <Card style={[styles.statCard, { backgroundColor: '#E8F5E8' }]}>
           <Card.Content style={styles.statContent}>
-            <Surface style={[styles.statIconContainer, { backgroundColor: '#388E3C' }]} elevation={2}>
-              <IconFallback name="heart-pulse" size={22} color="#FFFFFF" />
+            <Surface style={[styles.statIconContainer, { backgroundColor: '#388E3C' }]}>
+              <IconFallback source="heart-pulse" size={22} color="#FFFFFF" />
             </Surface>
             <Text variant="headlineSmall" style={[styles.statNumber, { color: '#388E3C' }]}>
               {dashboardStats.activePatients}
@@ -309,7 +319,7 @@ export default function DoctorDashboard({ navigation }: Props) {
         <Card style={[styles.statCard, { backgroundColor: '#FFEBEE' }]} elevation={4}>
           <Card.Content style={styles.statContent}>
             <Surface style={[styles.statIconContainer, { backgroundColor: '#D32F2F' }]} elevation={2}>
-              <IconFallback name="alert-circle" size={22} color="#FFFFFF" />
+              <IconFallback source="alert-circle" size={22} color="#FFFFFF" />
             </Surface>
             <Text variant="headlineSmall" style={[styles.statNumber, { color: '#D32F2F' }]}>
               {dashboardStats.alertsCount}
@@ -321,7 +331,7 @@ export default function DoctorDashboard({ navigation }: Props) {
         <Card style={[styles.statCard, { backgroundColor: '#F3E5F5' }]} elevation={4}>
           <Card.Content style={styles.statContent}>
             <Surface style={[styles.statIconContainer, { backgroundColor: '#7B1FA2' }]} elevation={2}>
-              <IconFallback name="calendar-check" size={22} color="#FFFFFF" />
+              <IconFallback source="calendar-check" size={22} color="#FFFFFF" />
             </Surface>
             <Text variant="headlineSmall" style={[styles.statNumber, { color: '#7B1FA2' }]}>
               {dashboardStats.todayVisits}
@@ -389,9 +399,29 @@ export default function DoctorDashboard({ navigation }: Props) {
     </View>
   );
 
+  const navigateToPatientOverview = (patient: Patient) => {
+    // Serialize patient data to avoid non-serializable values
+    const serializedPatient = {
+      ...patient,
+      vitals: patient.vitals ? {
+        ...patient.vitals,
+        timestamp: patient.vitals.timestamp instanceof Date 
+          ? patient.vitals.timestamp.toISOString() 
+          : patient.vitals.timestamp
+      } : undefined,
+      createdAt: patient.createdAt instanceof Date 
+        ? patient.createdAt.toISOString() 
+        : patient.createdAt,
+      updatedAt: patient.updatedAt instanceof Date 
+        ? patient.updatedAt.toISOString() 
+        : patient.updatedAt
+    };
+    navigation.navigate('PatientOverview', { patient: serializedPatient });
+  };
+
   const renderPatientCard = ({ item: patient }: { item: Patient }) => (
     <Pressable
-      onPress={() => navigation.navigate('PatientOverview', { patient })}
+      onPress={() => navigateToPatientOverview(patient)}
       style={({ pressed }) => [
         {
           opacity: pressed ? 0.95 : 1,
@@ -400,8 +430,7 @@ export default function DoctorDashboard({ navigation }: Props) {
       ]}
     >
       <Card 
-        style={[styles.patientCard, { shadowColor: theme.colors.shadow }]}
-        elevation={5}
+        style={[styles.patientCard]}
       >
         <Card.Content style={styles.patientCardContent}>
           <View style={styles.patientCardHeader}>
@@ -415,7 +444,7 @@ export default function DoctorDashboard({ navigation }: Props) {
                   elevation={2}
                 >
                   <IconFallback 
-                    name={patient.status === PatientStatus.IN_RANGE ? "check" : 
+                    source={patient.status === PatientStatus.IN_RANGE ? "check" : 
                           patient.status === PatientStatus.OUT_OF_RANGE ? "alert" : "wifi-off"} 
                     size={12} 
                     color="#FFFFFF" 
@@ -424,26 +453,26 @@ export default function DoctorDashboard({ navigation }: Props) {
               </View>
               <View style={styles.patientDetailsRow}>
                 <View style={styles.detailItem}>
-                  <IconFallback name="account" size={14} color={theme.colors.outline} />
+                  <IconFallback source="account" size={14} color={theme.colors.outline} />
                   <Text variant="bodySmall" style={styles.detailText}>
                     {patient.age} years
                   </Text>
                 </View>
                 <View style={styles.detailItem}>
-                  <IconFallback name="weight-kilogram" size={14} color={theme.colors.outline} />
+                  <IconFallback source="weight-kilogram" size={14} color={theme.colors.outline} />
                   <Text variant="bodySmall" style={styles.detailText}>
                     {patient.weight}kg
                   </Text>
                 </View>
                 <View style={styles.detailItem}>
-                  <IconFallback name="human-male-height" size={14} color={theme.colors.outline} />
+                  <IconFallback source="human-male-height" size={14} color={theme.colors.outline} />
                   <Text variant="bodySmall" style={styles.detailText}>
                     {patient.height}cm
                   </Text>
                 </View>
               </View>
               <View style={styles.emergencyContact}>
-                <IconFallback name="phone" size={14} color="#E91E63" />
+                <IconFallback source="phone" size={14} color="#E91E63" />
                 <Text variant="bodySmall" style={[styles.caregiverContact, { color: '#E91E63' }]}>
                   Emergency: {patient.caregiverContactNumber}
                 </Text>
@@ -466,7 +495,7 @@ export default function DoctorDashboard({ navigation }: Props) {
               <View style={styles.vitalsRow}>
                 <View style={styles.vitalItem}>
                   <Surface style={[styles.vitalIconContainer, { backgroundColor: '#E91E6320' }]} elevation={1}>
-                    <IconFallback name="heart" size={18} color="#E91E63" />
+                    <IconFallback source="heart" size={18} color="#E91E63" />
                   </Surface>
                   <View style={styles.vitalTextContainer}>
                     <Text variant="bodySmall" style={styles.vitalValue}>
@@ -479,7 +508,7 @@ export default function DoctorDashboard({ navigation }: Props) {
                 </View>
                 <View style={styles.vitalItem}>
                   <Surface style={[styles.vitalIconContainer, { backgroundColor: '#2196F320' }]} elevation={1}>
-                    <IconFallback name="water-percent" size={18} color="#2196F3" />
+                    <IconFallback source="water-percent" size={18} color="#2196F3" />
                   </Surface>
                   <View style={styles.vitalTextContainer}>
                     <Text variant="bodySmall" style={styles.vitalValue}>
@@ -492,7 +521,7 @@ export default function DoctorDashboard({ navigation }: Props) {
                 </View>
                 <View style={styles.vitalItem}>
                   <Surface style={[styles.vitalIconContainer, { backgroundColor: '#4CAF5020' }]} elevation={1}>
-                    <IconFallback name="walk" size={18} color="#4CAF50" />
+                    <IconFallback source="walk" size={18} color="#4CAF50" />
                   </Surface>
                   <View style={styles.vitalTextContainer}>
                     <Text variant="bodySmall" style={styles.vitalValue}>
@@ -513,7 +542,7 @@ export default function DoctorDashboard({ navigation }: Props) {
 
   if (isLoading && patients.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <ScrollView style={styles.scrollView}>
           {renderHeader()}
           <View style={styles.loadingContainer}>
@@ -532,8 +561,99 @@ export default function DoctorDashboard({ navigation }: Props) {
     );
   }
 
+  const renderHealthInsights = () => {
+    if (!ConfigService.isMockModeEnabled()) return null;
+
+    const latestSleep = mockSleepData[0];
+    const latestMood = mockMoodEntries[0];
+    const latestActivity = mockPhysicalActivities[0];
+    const latestDiet = mockDietEntries[0];
+
+    return null; // Temporarily disabled due to missing styles
+    
+    /*
+    return (
+      <View style={styles.quickActions}>
+        <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground, marginBottom: 16 }]}>
+          Recent Health Insights
+        </Text>
+        
+        <View style={styles.actionsGrid}>
+          <Card style={[styles.actionCard, { backgroundColor: '#E8F5E8' }]} elevation={2}>
+            <Card.Content style={styles.actionContent}>
+              <View style={styles.actionHeader}>
+                <IconFallback source="sleep" size={20} color="#4CAF50" />
+                <Text variant="labelMedium" style={[styles.actionTitle, { color: '#4CAF50' }]}>
+                  Sleep Quality
+                </Text>
+              </View>
+              <Text variant="headlineSmall" style={styles.actionValue}>
+                {(latestSleep as any)?.qualityRating || 'N/A'}/10
+              </Text>
+              <Text variant="bodySmall" style={styles.actionSubtitle}>
+                {(latestSleep as any)?.durationHours || 'N/A'}h duration
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.actionCard, { backgroundColor: '#FFF3E0' }]} elevation={2}>
+            <Card.Content style={styles.actionContent}>
+              <View style={styles.actionHeader}>
+                <IconFallback source="emoticon-happy" size={20} color="#FF9800" />
+                <Text variant="labelMedium" style={[styles.actionTitle, { color: '#FF9800' }]}>
+                  Mood Score
+                </Text>
+              </View>
+              <Text variant="headlineSmall" style={styles.actionValue}>
+                {(latestMood as any)?.score || 'N/A'}/10
+              </Text>
+              <Text variant="bodySmall" style={styles.actionSubtitle}>
+                {latestMood?.mood || 'No data'}
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.actionCard, { backgroundColor: '#E3F2FD' }]} elevation={2}>
+            <Card.Content style={styles.actionContent}>
+              <View style={styles.actionHeader}>
+                <IconFallback source="run" size={20} color="#2196F3" />
+                <Text variant="labelMedium" style={[styles.actionTitle, { color: '#2196F3' }]}>
+                  Activity
+                </Text>
+              </View>
+              <Text variant="headlineSmall" style={styles.actionValue}>
+                {(latestActivity as any)?.duration || 'N/A'}min
+              </Text>
+              <Text variant="bodySmall" style={styles.actionSubtitle}>
+                {(latestActivity as any)?.type || 'No activity'}
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.actionCard, { backgroundColor: '#F3E5F5' }]} elevation={2}>
+            <Card.Content style={styles.actionContent}>
+              <View style={styles.actionHeader}>
+                <IconFallback source="food-apple" size={20} color="#9C27B0" />
+                <Text variant="labelMedium" style={[styles.actionTitle, { color: '#9C27B0' }]}>
+                  Nutrition
+                </Text>
+              </View>
+              <Text variant="headlineSmall" style={styles.actionValue}>
+                {(latestDiet as any)?.totalCalories || 'N/A'}
+              </Text>
+              <Text variant="bodySmall" style={styles.actionSubtitle}>
+                {(latestDiet as any)?.mealType || 'No meals'} calories
+              </Text>
+            </Card.Content>
+          </Card>
+        </View>
+      </View>
+    );
+    */
+  };
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
@@ -572,7 +692,7 @@ export default function DoctorDashboard({ navigation }: Props) {
           {filteredPatients.length === 0 ? (
             <Surface style={[styles.emptyContainer, { backgroundColor: theme.colors.surfaceVariant }]} elevation={2}>
               <Surface style={[styles.emptyIconContainer, { backgroundColor: theme.colors.primaryContainer }]} elevation={3}>
-                <IconFallback name="account-search" size={48} color={theme.colors.primary} />
+                <IconFallback source="account-search" size={48} color={theme.colors.primary} />
               </Surface>
               <Text variant="titleLarge" style={[styles.emptyTitle, { color: theme.colors.onSurfaceVariant }]}>
                 {searchQuery ? 'No patients match your search' : 'No patients added yet'}
@@ -621,7 +741,7 @@ export default function DoctorDashboard({ navigation }: Props) {
         ]}
       >
         <View style={styles.fabContent}>
-          <IconFallback name="plus" size={24} color="#FFFFFF" />
+          <IconFallback source="plus" size={24} color="#FFFFFF" />
           <Text style={styles.fabLabel}>Add Patient</Text>
         </View>
       </Pressable>
@@ -635,12 +755,11 @@ const styles = StyleSheet.create({
   },
   headerSurface: {
     borderRadius: 0,
-    marginTop: -50,
   },
   headerGradient: {
-    paddingVertical: 24,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    paddingTop: 74,
+    paddingTop: 44,
   },
   headerContent: {
     flexDirection: 'row',
